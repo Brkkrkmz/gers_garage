@@ -1,0 +1,82 @@
+/* service.css */
+
+/* Genel stil */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    background-color: #f2f2f2;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.service-list li {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.service-list h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.service-list p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+/* Header stil */
+.header {
+    background-color: #333;
+    padding: 10px 20px;
+    color: #fff;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.header-info li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+/* Navigasyon stil */
+.nav {
+    background-color: #f9f9f9;
+    padding: 10px 20px;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #333;
+    margin-right: 10px;
+}
+
+/* Footer stil */
+.footer {
+    background-color: #333;
+    padding: 10px 20px;
+    color: #fff;
+    text-align: center;
+}
+
+.footer p {
+    margin: 0;
+}

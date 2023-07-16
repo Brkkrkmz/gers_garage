@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ger's Garage Reservation Form</title>
+  <link rel="stylesheet" type="text/css" href="/static/booking.css">
+</head>
+<body>
+	<header class="header">
+		<link rel="stylesheet" type="text/css" href="/static/index.css">
+  		<h1>Ger's Garage</h1>
+
+		<ul class="header-info">
+			<li>Email: info@gersgarage.com</li>
+			<li>Phone: +1 123-456-7890</li>
+			<li>Opening Hours: Mon-Sat, 8am-6pm</li>
+		</ul>
+		
+	</header>
+	<nav class="nav">
+		<a href="index.html">Home</a>
+        <a href="service.html">Services</a>
+        <a href="prices.html">Prices</a>
+        <a href="about.html">About Us</a>
+        <a href="booking.html">Booking</a>
+        <a href="contact.html">Contact</a>
+	</nav>
+
+
+
+
+  <h1>Ger's Garage Reservation Form</h1>
+
+  <form id="bookingForm">
+ 
+   
+
+
+    <label for="vehicleType">Vehicle Type:</label>
+    <select id="vehicleType" required>
+      <option value="Car">Car</option>
+      <option value="Motorcycle">Motorcycle</option>
+      <option value="Small Van">Small Van</option>
+      <option value="Small Bus">Small Bus</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+
+    <label for="vehicleMake">Vehicle Make:</label>
+    <input type="text" id="vehicleMake" required><br><br>
+
+    <label for="licensePlate">License Plate:</label>
+    <input type="text" id="licensePlate" required><br><br>
+
+    <label for="engineType">Engine Type:</label>
+    <select id="engineType" required>
+      <option value="Petrol">Petrol</option>
+      <option value="Diesel">Diesel</option>
+      <option value="Hybrid">Hybrid</option>
+      <option value="Electric">Electric</option>
+    </select><br><br>
+
+    <label for="bookingType">Booking Type:</label>
+    <select id="bookingType" required>
+      <option value="AnnualService">Annual Service</option>
+      <option value="MajorService">Major Service</option>
+      <option value="Repair">Repair/Fault</option>
+      <option value="MajorRepair">Major Repair</option>
+    </select><br><br>
+
+    <label for="customerComments">Customer Comments:</label>
+    <textarea id="customerComments" rows="4"></textarea><br><br>
+
+    <label for="bookingDate">Booking Date:</label>
+    <input type="date" id="bookingDate" required><br><br>
+
+    <button type="submit">Make Reservation</button>
+  </form>
+
+  <script src="booking.css"></script>
+</body>
+</html>
