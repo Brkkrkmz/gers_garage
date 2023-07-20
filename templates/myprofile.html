@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+    
+{% block content %}
+    <section class="content">
+        <h1>Welcome to Ger's Garage, {{ email }}</h1>
+        <img src="file:///C:/proje/image/garage-image.jpg" alt="Garage Image">
+        <p>Your email: {{ email }}</p>
+        <p> {{ session['user_id'] }}</p>
+        <p>Your phone number: {{ mobile_phone }}</p>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2023 Ger's Garage. </p>
+    </footer>
+{% endblock %}

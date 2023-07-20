@@ -1,82 +1,36 @@
-/* service.css */
-
-/* Genel stil */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+/* Services List */
+.service-list {
+    list-style: none;
     padding: 0;
-    line-height: 1.5;
-    background-color: #f2f2f2;
-}
-
-.container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.service-list li {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .service-list li {
+    flex-basis: calc(50% - 20px);
     margin-bottom: 30px;
     padding: 20px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-}
-
-.service-list h2 {
-    color: #333;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.service-list p {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 0;
-}
-
-/* Header stil */
-.header {
-    background-color: #333;
-    padding: 10px 20px;
-    color: #fff;
-}
-
-.header h1 {
-    font-size: 24px;
-    margin: 0;
-}
-
-.header-info li {
-    list-style: none;
-    margin-bottom: 5px;
-}
-
-/* Navigasyon stil */
-.nav {
+    border: 1px solid #ddd;
+    border-radius: 4px;
     background-color: #f9f9f9;
-    padding: 10px 20px;
-}
-
-.nav a {
-    text-decoration: none;
-    color: #333;
-    margin-right: 10px;
-}
-
-/* Footer stil */
-.footer {
-    background-color: #333;
-    padding: 10px 20px;
-    color: #fff;
+  }
+  
+  .service-list h2 {
+    font-size: 20px;
+    margin-top: 0;
+  }
+  
+  .service-list p {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #f5f5f5;
+    padding: 20px;
     text-align: center;
-}
-
-.footer p {
-    margin: 0;
-}
+    font-size: 14px;
+    color: #666;
+  }
+  

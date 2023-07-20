@@ -1,31 +1,11 @@
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>User Registration Form</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">              
-    </head>
-    <body>
-        <header class="header">
-            <link rel="stylesheet" type="text/css" href="/static/index.css">
-            <h1>Ger's Garage</h1>
-            {{data}}
-            <ul class="header-info">
-                <li>Email: info@gersgarage.com</li>
-                <li>Phone: +1 123-456-7890</li>
-                <li>Opening Hours: Mon-Sat, 8am-6pm</li>
-            </ul>
-            
-        </header>
-        <nav class="nav">
-            <a href="index.html">Home</a>
-            <a href="service.html">Services</a>
-            <a href="prices.html">Prices</a>
-            <a href="about.html">About Us</a>
-            <a href="booking.html">Booking</a>
-            <a href="contact.html">Contact</a>
-        </nav>
 
+
+{% extends "base.html" %}
+    
+{% block content %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">              
+    
     <div class="container">
         <h2>User Registration</h2>
         <form action="{{ url_for('add_user') }}" method="post">
@@ -66,6 +46,6 @@
 
         </form>
     </div>
-    </body>
-    </html>
+  
 
+    {% endblock %}

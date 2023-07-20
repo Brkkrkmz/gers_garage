@@ -1,3 +1,4 @@
+<!-- booking.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,25 +6,26 @@
   <link rel="stylesheet" type="text/css" href="/static/booking.css">
 </head>
 <body>
-	<header class="header">
-		<link rel="stylesheet" type="text/css" href="/static/index.css">
-  		<h1>Ger's Garage</h1>
+  <header class="header">
+    <h1>Ger's Garage</h1>
+    <ul class="header-info">
+        <li>Email: info@gersgarage.com</li>
+        <li>Phone: +1 123-456-7890</li>
+        <li>Opening Hours: Mon-Sat, 8am-6pm</li>
+    </ul>
+    <a href="login.html" class="login">Log In</a>
+</header>
 
-		<ul class="header-info">
-			<li>Email: info@gersgarage.com</li>
-			<li>Phone: +1 123-456-7890</li>
-			<li>Opening Hours: Mon-Sat, 8am-6pm</li>
-		</ul>
-		
-	</header>
-	<nav class="nav">
-		<a href="index.html">Home</a>
-        <a href="service.html">Services</a>
-        <a href="prices.html">Prices</a>
-        <a href="about.html">About Us</a>
-        <a href="booking.html">Booking</a>
-        <a href="contact.html">Contact</a>
-	</nav>
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="service.html">Services</a>
+    <a href="prices.html">Prices</a>
+    <a href="about.html">About Us</a>
+    <a href="booking.html">Booking</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+
 
 
 
@@ -31,10 +33,6 @@
   <h1>Ger's Garage Reservation Form</h1>
 
   <form id="bookingForm">
- 
-   
-
-
     <label for="vehicleType">Vehicle Type:</label>
     <select id="vehicleType" required>
       <option value="Car">Car</option>
