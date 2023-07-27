@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="content">
+        <h2>Add a New Vehicle</h2>
+        <form action="{{ url_for('add_vehicle') }}" method="POST">
+            <label for="vehicle_type">Vehicle Type:</label>
+            <select id="vehicle_type" name="vehicle_type" required>
+                <option value="car">Car</option>
+                <option value="motorbike">Motorbike</option>
+                <option value="small_van">Small Van</option>
+                <option value="small_bus">Small Bus</option>
+                <option value="other">Other</option>
+            </select><br>
+
+            <label for="make">Make:</label>
+            <select id="make" name="make" required>
+                <option value="Ford">Ford</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Honda">Honda</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="BMW">BMW</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="Audi">Audi</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Kia">Kia</option>
+                <option value="Mazda">Mazda</option>
+                <option value="Subaru">Subaru</option>
+                <option value="Volvo">Volvo</option>
+                <option value="Fiat">Fiat</option>
+                <option value="Renault">Renault</option>
+                <option value="Peugeot">Peugeot</option>
+                <option value="Chrysler">Chrysler</option>
+                <option value="Jeep">Jeep</option>
+                <option value="Suzuki">Suzuki</option>
+                <option value="Mitsubishi">Mitsubishi</option>
+                <option value="Lexus">Lexus</option>
+                <option value="Acura">Acura</option>
+                <option value="Infiniti">Infiniti</option>
+                <option value="GMC">GMC</option>
+                <option value="Mini">Mini</option>
+                <option value="Jaguar">Jaguar</option>
+                <option value="Land Rover">Land Rover</option>
+                <option value="Porsche">Porsche</option>
+                <option value="Tesla">Tesla</option>
+                <option value="Other">Other</option>
+            </select><br>
+
+            <label for="licence_details">Licence Details:</label>
+            <input type="text" id="licence_details" name="licence_details" required><br>
+
+            <label for="engine_type">Engine Type:</label>
+            <select id="engine_type" name="engine_type" required>
+                <option value="diesel">Diesel</option>
+                <option value="petrol">Petrol</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="electric">Electric</option>
+            </select><br>
+          
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='add_vehicle.css') }}">
+{% endblock %}

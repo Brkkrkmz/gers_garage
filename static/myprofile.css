@@ -1,0 +1,73 @@
+/* Base stilini sıfırlama */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Genel stil ayarları */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* İçerik stil ayarları */
+.content {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.content h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.content p {
+    margin-bottom: 10px;
+}
+
+.content ul {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.content ul li {
+    margin-bottom: 5px;
+}
+
+/* Footer stil ayarları */
+.footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Butonlar için stil ayarları */
+.buttons-container {
+    position: absolute;
+    top: 60%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+}
+
+.buttons-container a {
+    display: block;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+}
+
+.buttons-container a:hover {
+    background-color: #0056b3;
+}

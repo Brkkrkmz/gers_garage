@@ -1,11 +1,6 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, flash
 from flask_mysqldb import MySQL
 import secrets
-
-
-
-
- 
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -18,8 +13,32 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'gersgarage'
 
-
 mysql = MySQL(app)
+
+# Araç ekleme işlemi
+@app.route('/add_vehicle', methods=["POST"])
+def add_vehicle():
+    # Formdan verileri al
+    customer_id = session.get('user_id')  # Bu, oturum açmış kullanıcının ID'sini alıyoruz
+    vehicle_type = request.form['vehicle_type']
+    make = request.form['make']
+    licence_details = request.form['licence_details']  # Sütun adı "licence_details" olduğu için düzgün yazdığınızdan emin olun
+    engine_type = request.form['engine_type']
+
+    # Veritabanına veri eklemek için işlevi çağır
+    add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type)
+
+    flash("Vehicle added successfully.", "success")
+    return redirect('/add_vehicle.html')
+
+
+# Veritabanına veri eklemek için işlev
+def add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type):
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO vehicles (customer_id, vehicle_type, make, licence_details, engine_type) VALUES (%s, %s, %s, %s, %s)",
+                (customer_id, vehicle_type, make, licence_details, engine_type))
+    mysql.connection.commit()
+    cur.close()
 
 
 
@@ -36,6 +55,10 @@ def index():
 @app.route('/booking.html')
 def booking():
     return render_template('booking.html')
+
+@app.route('/add_vehicle.html')
+def vehicle():
+    return render_template('add_vehicle.html')
 
 
 @app.route('/contact.html')
@@ -61,8 +84,6 @@ def service():
 @app.route('/register.html')
 def register():
     return render_template('register.html')
-
-
 
 
 @app.route('/')
@@ -164,27 +185,31 @@ def login():
 def myprofile():
     # Kullanıcı oturumunu kontrol et
     if 'user_id' in session:
-
-        print(session)
         user_id = session['user_id']
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (user_id,))
         user = cursor.fetchone()
-        print(user)
         cursor.close()
 
         if user:
             email = user[3]
             mobile_phone = user[2]
+            name = user[1]
+            surname = user[5]
+            # Oturum açmış kullanıcılar için myprofile tuşunu göster
+            show_myprofile_button = True
+            return render_template('myprofile.html', email=email, mobile_phone=mobile_phone, name=name, surname=surname, show_myprofile_button=show_myprofile_button)
 
-            return render_template('myprofile.html', email=email, mobile_phone=mobile_phone)
+    # Kullanıcı oturumu yoksa veya çıkış yapılmışsa, login sayfasına yönlendir
+    return redirect('/login.html')
 
-    return redirect('/login')
+
 
 
 @app.route('/logout')
 def logout():
     session.clear()
+    flash("You have been logged out.", "success")
     return redirect('/login.html')
 
 

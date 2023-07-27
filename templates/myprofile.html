@@ -1,15 +1,42 @@
 {% extends "base.html" %}
-    
+
 {% block content %}
     <section class="content">
-        <h1>Welcome to Ger's Garage, {{ email }}</h1>
-        <img src="file:///C:/proje/image/garage-image.jpg" alt="Garage Image">
-        <p>Your email: {{ email }}</p>
-        <p> {{ session['user_id'] }}</p>
-        <p>Your phone number: {{ mobile_phone }}</p>
+        {% if show_myprofile_button %}
+            <h1>Welcome to Ger's Garage, {{ name }} {{ surname }}</h1>
+            <img src="file:///C:/proje/image/garage-image.jpg" alt="Garage Image">
+            <p>Your email: {{ email }}</p>
+            <p>Your phone number: {{ mobile_phone }}</p>
+
+            <h2>Araç Bilgileriniz</h2>
+            <ul>
+                <li>Brand 1 Model 1 - Plate Number 123 ABC</li>
+                <li>Brand 2 Model 2 - Plate Number 456 XYZ</li>
+            </ul>
+
+ 
+
+            <h2>İletişim Bilgileriniz</h2>
+            <p>Email: {{ email }}</p>
+            <p>Phone: {{ mobile_phone }}</p>
+        {% else %}
+            <h1>My Profile</h1>
+            <p>You need to log in to access your profile.</p>
+        {% endif %}
     </section>
 
     <footer class="footer">
         <p>&copy; 2023 Ger's Garage. </p>
     </footer>
+    
+    <div class="buttons-container">
+        <a href="add_vehicle.html">Araç Ekle</a>
+        <a href="#">Araç Bilgilerini Güncelle</a>
+        <a href="#">İletişim Bilgilerini Güncelle</a>
+        <a href="#">Rezervasyon Yap</a>
+        
+    </div>
+
+    <!-- CSS dosyasını referans et -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='myprofile.css') }}">
 {% endblock %}
