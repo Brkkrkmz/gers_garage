@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div>
+    <h1>Contact Us</h1>
+    <p>Email: info@gersgarage.com</p>
+    <p>Phone: +1 333-222-7890</p>
+    <p>Opening Hours: Mon-Sat, 8am-6pm</p>
+    <p>Address: Carrysfort Road 34, Dalkey, Ireland</p>
+  </div>
+
+  <div id="map" style="height: 400px; width: 100%;"></div>
+
+  <script>
+    // Google Maps API'den harita oluşturmak için işlev
+    function initMap() {
+      // Koordinatları belirtin (Dalkey, Ireland)
+      const location = { lat: 53.274339, lng: -6.105259 };
+
+      // Haritayı oluşturun ve hedef div içine yerleştirin
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: location,
+        zoom: 15,
+      });
+
+      // İşaretçi (marker) oluşturun ve haritada gösterin
+      const marker = new google.maps.Marker({
+        position: location,
+        map: map,
+      });
+    }
+  </script>
+
+  <!-- Google Maps API'sini yükleyin -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGfeNx8vujxwzopSelfHM5gNH6AMJ1EZA&callback=initMap"
+    async
+    defer
+  > </script>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='contact.css') }}">
+
+{% endblock %}
