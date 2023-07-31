@@ -1,0 +1,76 @@
+/* Genel stiller */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  /* İletişim bilgileri için stiller */
+  .contact-info {
+    margin-top: 30px;
+  }
+  
+  .contact-info h2 {
+    color: #333;
+    font-size: 20px;
+  }
+  
+  .contact-info p {
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  /* Harita bölümü için stiller */
+  .map-container {
+    margin-top: 30px;
+  }
+  
+  /* Form stil */
+  #bookingForm {
+    margin-top: 30px;
+  }
+  
+  #bookingForm label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  #bookingForm select,
+  #bookingForm input[type="date"],
+  #bookingForm textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  #bookingForm textarea {
+    resize: vertical;
+  }
+  
+  #bookingForm button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  #bookingForm button:hover {
+    background-color: #45a049;
+  }
+  

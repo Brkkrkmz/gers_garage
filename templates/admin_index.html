@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garage Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_index.css') }}"> <!-- CSS dosyasının yolu -->
+</head>
+<body>
+    <h1>Welcome, Admin!</h1>
+    <div class="dashboard-links">
+        <a href="{{ url_for('admin_schedule') }}">View Schedule</a>
+        <a href="{{ url_for('admin.invoice') }}">Create Invoice</a>
+        <!-- Diğer dashboard linkleri buraya eklenebilir -->
+        <a href="{{ url_for('admin_login') }}">Logout</a>
+    </div>
+</body>
+</html>
+

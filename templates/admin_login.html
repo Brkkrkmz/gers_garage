@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garage Admin Login</title>
+    <link rel="stylesheet" href="/static/admin_login.css"> <!-- CSS dosyasının yolu -->
+</head>
+<body>
+    <div class="login-container">
+        <h1>Garage Admin Login</h1>
+        <form action="/login" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</body>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='add_vehicle.css') }}">
+
+</html>
