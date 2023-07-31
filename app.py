@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash,jsonify
 from flask_mysqldb import MySQL
 import secrets
-
+from admin import admin_app
 
 
 app = Flask(__name__)
