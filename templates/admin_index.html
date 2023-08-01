@@ -1,18 +1,67 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Garage Admin Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin_index.css') }}"> <!-- CSS dosyasının yolu -->
-
-</head>
-<body>
-    <h1>Welcome, Admin!</h1>
-    <div class="dashboard-links">
-        <a href="{{ url_for('admin_schedule') }}">View Schedule</a>
+{% extends "admin_base.html" %}
     
-        <!-- Diğer dashboard linkleri buraya eklenebilir -->
-        <a href="{{ url_for('admin.invoice') }}">Create Invoice</a>
-        <a href="{{ url_for('admin_login') }}">Logout</a>
+{% block content %}
+
+<div class="row">
+  <div class="col-12">
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Bookings cıss</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Browser</th>
+            <th>Platform(s)</th>
+            <th>Engine version</th>
+            <th>CSS grade</th>
+          </tr>
+          </thead>
+          <tbody>
+          
+          <tr>
+            <td>Misc</td>
+            <td>IE Mobile</td>
+            <td>Windows Mobile 6</td>
+            <td>-</td>
+            <td>C</td>
+          </tr>
+          <tr>
+            <td>Misc</td>
+            <td>PSP browser</td>
+            <td>PSP</td>
+            <td>-</td>
+            <td>C</td>
+          </tr>
+          <tr>
+            <td>Other browsers</td>
+            <td>All others</td>
+            <td>-</td>
+            <td>-</td>
+            <td>U</td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <th>Rendering engine</th>
+            <th>Browser</th>
+            <th>Platform(s)</th>
+            <th>Engine version</th>
+            <th>CSS grade</th>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+      <!-- /.card-body -->
     </div>
-</body>
-</html>
+    <!-- /.card -->
+  </div>
+  <!-- /.col -->
+</div>
+<!-- /.row -->
+
+{% endblock content %}

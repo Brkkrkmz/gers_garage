@@ -1,9 +1,8 @@
-from flask import Flask, render_template, request
-import MySQLdb
+from flask import Flask, render_template, request, redirect, url_for, session
 import secrets
+import MySQLdb
 
 app = Flask(__name__)
-
 app.secret_key = secrets.token_hex(16)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
@@ -14,88 +13,74 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'gersgarage'
 
-# Booking sınıfı (Örnek, veritabanı şemanıza göre düzenlenmelidir)
-class Booking:
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
-        self.name = kwargs.get('name')
-        self.booking_date = kwargs.get('booking_date')
+# Veritabanı bağlantısını oluştur
+mysql = MySQLdb.connect(
+    host=app.config['MYSQL_HOST'],
+    user=app.config['MYSQL_USER'],
+    passwd=app.config['MYSQL_PASSWORD'],
+    db=app.config['MYSQL_DB']
+)
+cursor = mysql.cursor()
 
-# MySQL bağlantısını oluştur
-def connect_db():
-    return MySQLdb.connect(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
-    )
+@app.route('/')
+def home():
+    return redirect(url_for('login'))  # Redirect to the login page when first accessing the website
 
-# MySQL bağlantısını kapat
-def close_db(cursor, connection):
-    cursor.close()
-    connection.commit()
-    connection.close()
+@app.route('/admin_index.html')
+def admin_index1():
+    
+    return render_template('admin_index.html')
 
-
-@app.route('/admin/invoice')
-def admin_invoice():
-    # Burada fatura oluşturma işlemleri yapılabilir
+@app.route('/admin_invoice.html')
+def admin_invoice1():
     return render_template('admin_invoice.html')
 
 
-# Admin uygulamasının route ve view fonksiyonları
-@app.route('/')
-def admin_index():
-    return render_template('admin_index.html')
+@app.route('/admin_schedule.html')
+def admin_schedule1():
+    return render_template('admin_schedule.html')
 
 
-@app.route('/admin/schedule', methods=['GET', 'POST'])
-def admin_schedule():
+@app.route('/admin_index', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
-        selected_date = request.form['selected_date']
-        try:
-            connection = connect_db()
-            cursor = connection.cursor()
-            cursor.execute("SELECT * FROM booking WHERE booking_date = %s", (selected_date,))
-            bookings_data = cursor.fetchall()
+        username = request.form['username']
+        password = request.form['password']
 
-            # Booking nesneleri oluşturma
-            bookings = []
-            for booking_data in bookings_data:
-                booking = Booking(**booking_data)
-                bookings.append(booking)
+        user = validate_user(username, password)
+        if user:
+            # Kullanıcı adı ve şifre doğru, giriş başarılı, ana sayfaya yönlendir
+            session['user_id'] = user[0]  # User ID'yi session'a kaydet
+            return redirect('/admin_index.html')  # Redirect to admin_index.html after successful login
+        else:
+            # Kullanıcı adı veya şifre yanlış, hata mesajıyla tekrar login sayfasına dön
+            error_message = "Invalid username or password"
+            return render_template('admin_login.html', error_message=error_message)
 
-        except Exception as e:
-            print(f"Hata: {e}")
-            bookings = []
+    # For GET requests, render the login page
+    return render_template('admin_login.html')
 
-        finally:
-            close_db(cursor, connection)
+# Kullanıcı adı ve şifreyi doğrula
+def validate_user(username, password):
+    cursor.execute("SELECT * FROM admin WHERE username = %s AND password = %s", (username, password))
+    user = cursor.fetchone()
+    return user
 
+@app.route('/logout')
+def logout():
+    # Kullanıcıyı çıkış yaparken session'dan sil
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/admin_index')
+def admin_index():
+    # Check if the user is logged in
+    if 'user_id' in session:
+        return render_template('admin_index.html')
     else:
-        try:
-            import datetime
-            today_date = datetime.date.today().strftime('%Y-%m-%d')
-            connection = connect_db()
-            cursor = connection.cursor()
-            cursor.execute("SELECT * FROM booking WHERE booking_date = %s", (today_date,))
-            bookings_data = cursor.fetchall()
-
-            # Booking nesneleri oluşturma
-            bookings = []
-            for booking_data in bookings_data:
-                booking = Booking(**booking_data)
-                bookings.append(booking)
-
-        except Exception as e:
-            print(f"Hata: {e}")
-            bookings = []
-
-        finally:
-            close_db(cursor, connection)
-
-    return render_template('admin_schedule.html', bookings=bookings)
-
+        # User is not logged in, redirect to the login page
+        return redirect('/admin_login.html') 
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,10 +1,12 @@
+# app.py
 from flask import Flask, render_template, request, redirect, session, flash,jsonify
 from flask_mysqldb import MySQL
 import secrets
-from admin import admin_app
+
 
 
 app = Flask(__name__)
+
 app.secret_key = secrets.token_hex(16)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
@@ -46,16 +48,14 @@ def add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_t
 
 
 
-@app.route('/login.html')
-def login1():
-    return render_template('login.html')
-
 
 @app.route('/index.html')
 def index():
     return render_template('index.html')
 
-
+@app.route('/login.html')
+def login1():
+    return render_template('login.html')
 
 
 @app.route('/add_vehicle.html')
@@ -95,6 +95,8 @@ def home():
         return redirect('/myprofile.html')
 
     return redirect('/login.html')
+
+
 
 
 @app.route('/add_user', methods=["POST"])
@@ -288,11 +290,13 @@ def add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, booking
 
 @app.route('/logout')
 def logout():
-    session.clear()
+    session['user_id'] = ''
     flash("You have been logged out.", "success")
 
     return redirect('/login.html')
 
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+     app.run(debug=True)
     
