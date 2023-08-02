@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import secrets
 import MySQLdb
 from datetime import datetime
@@ -14,17 +14,16 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'gersgarage'
 
-# Veritabanı bağlantısını oluştur
-mysql = MySQLdb.connect(
-    host=app.config['MYSQL_HOST'],
-    user=app.config['MYSQL_USER'],
-    passwd=app.config['MYSQL_PASSWORD'],
-    db=app.config['MYSQL_DB']
-)
-
-# Function to create and return a database connection
+# Function to create and return a database connection and cursor
 def get_database_connection():
-    return mysql
+    connection = MySQLdb.connect(
+        host=app.config['MYSQL_HOST'],
+        user=app.config['MYSQL_USER'],
+        passwd=app.config['MYSQL_PASSWORD'],
+        db=app.config['MYSQL_DB']
+    )
+    cursor = connection.cursor()
+    return connection, cursor
 
 @app.route('/view_schedule', methods=['POST'])
 def view_schedule():
@@ -32,9 +31,8 @@ def view_schedule():
     date = data.get('date')
 
     if date:
-        # Get database connection
-        connection = get_database_connection()
-        cursor = connection.cursor()
+        # Get database connection and cursor
+        connection, cursor = get_database_connection()
 
         # Retrieve bookings for the selected date with customer, vehicle, and service details
         query = """
@@ -62,8 +60,7 @@ def allocate_mechanic():
     mechanic_name = request.form['mechanic_name']
 
     # Rezervasyonu güncelle ve mekanik atamayı kaydet
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
     cursor.execute("UPDATE bookings SET mechanic_name = %s WHERE booking_id = %s", (mechanic_name, booking_id))
     connection.commit()
     cursor.close()
@@ -71,60 +68,21 @@ def allocate_mechanic():
 
     return redirect(url_for('view_schedule'))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/')
 def home():
     return redirect(url_for('login'))  # Redirect to the login page when first accessing the website
 
 @app.route('/admin_index.html')
 def admin_index1():
-    
     return render_template('admin_index.html')
 
 @app.route('/admin_invoice.html')
 def admin_invoice1():
     return render_template('admin_invoice.html')
 
-
 @app.route('/admin_schedule.html')
 def admin_schedule1():
     return render_template('admin_schedule.html')
-
-
 
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():
@@ -147,8 +105,11 @@ def login():
 
 # Kullanıcı adı ve şifreyi doğrula
 def validate_user(username, password):
+    connection, cursor = get_database_connection()
     cursor.execute("SELECT * FROM admin WHERE username = %s AND password = %s", (username, password))
     user = cursor.fetchone()
+    cursor.close()
+    connection.close()
     return user
 
 @app.route('/logout')
@@ -156,7 +117,6 @@ def logout():
     # Kullanıcıyı çıkış yaparken session'dan sil
     session.pop('user_id', None)
     return redirect(url_for('login'))
-
 
 @app.route('/admin_index')
 def admin_index():
@@ -166,5 +126,6 @@ def admin_index():
     else:
         # User is not logged in, redirect to the login page
         return redirect('/admin_login.html') 
+
 if __name__ == "__main__":
     app.run(debug=True)
