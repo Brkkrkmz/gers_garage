@@ -1,33 +1,59 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Garage Admin - Schedule</title>
-    <link rel="stylesheet" href="/static/admin_schedule.css"> 
-</head>
-<body>
-    <h1>Service Schedule</h1>
-    <form action="/admin_schedule" method="post">
-        <label for="selected_date">Select Date:</label>
-        <input type="date" id="selected_date" name="selected_date">
-        <input type="submit" value="Show Bookings">
-    </form>
+<!-- view_schedule.html -->
+{% extends "admin_base.html" %}
 
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Vehicle</th>
-            <th>Mechanic</th>
-            <th>Status</th>
-        </tr>
-        {% for booking in bookings %}
-        <tr>
-            <td>{{ booking.booking_date }}</td>
-            <td>{{ booking.vehicle_id }}</td>
-            <td>Assigned Mechanic</td>
-            <td>{{ booking.booking_status }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+{% block content %}
+<h1>Schedule</h1>
+<form id="dateForm">
+    <label for="date">Select Date:</label>
+    <input type="date" id="date" name="date">
+    <input type="button" value="View Schedule" onclick="viewSchedule()">
+</form>
 
+<div id="schedule">
+    <!-- AJAX response will be displayed here -->
+</div>
+
+<script>
+    function viewSchedule() {
+        const form = document.getElementById('dateForm');
+        const date = form.elements['date'].value;
+
+        // AJAX ile Flask view_schedule endpointine istek gönderin
+        fetch(`/view_schedule`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 'date': date }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const scheduleDiv = document.getElementById('schedule');
+            scheduleDiv.innerHTML = '';
+
+            if (data.booking_details && data.booking_details.length > 0) {
+                scheduleDiv.innerHTML = '<h2>Booking Details for ' + data.date + '</h2>';
+                const ul = document.createElement('ul');
+
+                data.booking_details.forEach(booking => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>Booking ID:</strong> ${booking[0]}<br>
+                                    <strong>Customer Name:</strong> ${booking[1]}<br>
+                                    <strong>Customer Surname:</strong> ${booking[2]}<br>
+                                    <strong>Vehicle Type:</strong> ${booking[3]}<br>
+                                    <strong>Vehicle Make:</strong> ${booking[4]}<br>
+                                    <strong>Service Type:</strong> ${booking[5]}<br><br>`;
+                    ul.appendChild(li);
+                });
+
+                scheduleDiv.appendChild(ul);
+            } else {
+                scheduleDiv.innerHTML = '<p> No bookings found for the selected date. </p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+{% endblock %}

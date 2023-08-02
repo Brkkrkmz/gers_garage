@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import secrets
 import MySQLdb
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -20,7 +21,90 @@ mysql = MySQLdb.connect(
     passwd=app.config['MYSQL_PASSWORD'],
     db=app.config['MYSQL_DB']
 )
-cursor = mysql.cursor()
+
+# Function to create and return a database connection
+def get_database_connection():
+    return mysql
+
+@app.route('/view_schedule', methods=['POST'])
+def view_schedule():
+    data = request.get_json()
+    date = data.get('date')
+
+    if date:
+        # Get database connection
+        connection = get_database_connection()
+        cursor = connection.cursor()
+
+        # Retrieve bookings for the selected date with customer, vehicle, and service details
+        query = """
+            SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type
+            FROM bookings b
+            INNER JOIN customers c ON b.customer_id = c.customer_id
+            INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
+            INNER JOIN services s ON b.service_id = s.service_id
+            WHERE b.booking_date = %s
+        """
+        cursor.execute(query, (date,))
+        booking_details = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'date': date, 'booking_details': booking_details})
+    
+    return jsonify({'date': None, 'booking_details': None})
+
+# allocate_mechanic işlevi
+@app.route('/allocate_mechanic', methods=['POST'])
+def allocate_mechanic():
+    booking_id = request.form['booking_id']
+    mechanic_name = request.form['mechanic_name']
+
+    # Rezervasyonu güncelle ve mekanik atamayı kaydet
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE bookings SET mechanic_name = %s WHERE booking_id = %s", (mechanic_name, booking_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for('view_schedule'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route('/')
 def home():
@@ -39,6 +123,7 @@ def admin_invoice1():
 @app.route('/admin_schedule.html')
 def admin_schedule1():
     return render_template('admin_schedule.html')
+
 
 
 @app.route('/admin_index', methods=['GET', 'POST'])
@@ -81,6 +166,5 @@ def admin_index():
     else:
         # User is not logged in, redirect to the login page
         return redirect('/admin_login.html') 
-
 if __name__ == "__main__":
     app.run(debug=True)
