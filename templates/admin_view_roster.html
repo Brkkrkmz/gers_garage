@@ -19,19 +19,32 @@
     var selectedDate = new Date(dateInput.value);
     if (selectedDate.getDay() !== 1) {
       dateInput.value = '';
-      alert('Pazartesi günleri dışında tarih seçemezsiniz.');
+      alert('Choose the Monday of the week you want to see');
     }
   }
 </script>
-<h1>Mechanics Roster</h1>
-<table border="1">
-    <tr>
-        <th>Date</th>
-        <th>Mechanics</th>
-    </tr>
-    {% for date, mechanics in mechanics_list %}
-        <tr>
-            <td>{{ date }}</td>
+
+<div class="row">
+    <div class="col-12">
+  
+      <div class="card">
+        <div class="card-header">
+        <h3 class="card-title">Mechanics Roster</h3>
+        </div>
+         <div class="card-body">
+           <table id="example1" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+           <th>Date</th>
+          {% for date, mechanics in mechanics_list %}
+            <th>{{ date }}</th>
+          {% endfor %}
+         </tr>
+        </thead>
+        <tbody>
+          <tr>
+        <td>Mechanics</td>
+        {% for date, mechanics in mechanics_list %}
             <td>
                 <ul>
                     {% for name, surname in mechanics %}
@@ -39,9 +52,18 @@
                     {% endfor %}
                 </ul>
             </td>
-        </tr>
-    {% endfor %}
+        {% endfor %}
+    </tr>
+</tbody>
 </table>
+</div>
+<!-- /.card-body -->
+</div>
+<!-- /.card -->
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
 </body>
 </html>
 

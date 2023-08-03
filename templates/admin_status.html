@@ -1,41 +1,48 @@
 {% extends "admin_base.html" %}
 
 {% block content %} 
-<h1>Schedule</h1>
-<form id="dateForm">
-    <label for="date">Select Date:</label>
-    <input type="date" id="date" name="date">
-    <input type="button" value="View Schedule" onclick="viewSchedule()">
-</form>
+    <h1>Schedule</h1>
+    <form id="dateForm">
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date">
+        <input type="button" value="View Schedule" onclick="viewSchedule()">
+    </form>
 
-<div class="row">
-    <div class="col-12">
-        <!-- Your table will be inserted here -->
-        <div id="schedule">
-            <!-- AJAX response will be displayed here -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Your table will be inserted here -->
+            <div id="schedule">
+                <!-- AJAX response will be displayed here -->
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Booking ID Girişi -->
+  <!-- Booking ID Girişi -->
 <div id="bookingInput" style="display:none;">
     <!-- Yeni bir input alanı ekleyin -->
-    <form id="assignMechanicForm">
-        <label for="booking_id">Choose Booking ID:</label>
-        <select id="anotherSelect" class="form-control">
-            <!-- Options will be dynamically added here -->
-        </select>
+    <form id="assignStatusForm">
+    <label for="booking_id">Choose Booking ID:</label>
+    <select id="anotherSelect" class="form-control">
+        <!-- Options will be dynamically added here -->
+    </select>
 
-        <div class="form-group">
-            <label for="mechanic">Choose mechanic:</label>
-            <select id="mechanic" name="mechanic" class="form-control">
-                {% for mechanic in mechanics_data %}
-                    <option value="{{ mechanic[0] }}">{{ mechanic[1] }} {{ mechanic[2] }}</option>
+    <div class="form-group">
+        <form action="/admin_status" method="post">
+            <select name="status">
+                {% for status in status_data %}
+                    <option value="{{ status[0] }}">{{ status[0] }}</option>
                 {% endfor %}
             </select>
-        </div>
+            <input type="submit" value="Submit"> <!-- Gönder düğmesi eklendi -->
+        </form>
+    </div>
+    
+    
+    
         <input type="submit" value="ASSIGN">
-    </form>
+        </form>
+      
+</div>
 </div>
 
 <!-- ... -->
@@ -46,7 +53,7 @@
             const date = form.elements['date'].value;
 
             // AJAX ile Flask view_schedule endpointine istek gönderin
-            fetch(`/view_schedule`, {
+            fetch(`/admin_status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,6 +84,7 @@
                             <th>Vehicle Make</th>
                             <th>Service Type</th>
                             <th>Mechanic</th>
+                            <th>Status</th>
                         </tr>
                     `;
 
@@ -92,6 +100,7 @@
                             <td>${booking[4]}</td>
                             <td>${booking[5]}</td>
                             <td>${booking[6]} ${booking[7]}</td>
+                            <td>${booking[8]}</td>
                         `;
                         tableBody.appendChild(row);
                     });
@@ -139,47 +148,6 @@
                 });
             }
         }
-
-    
-        <!-- Make sure to include the jQuery library -->
-
-
-    $(document).ready(function() {
-        // When the form is submitted
-        $('#assignMechanicForm').on('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            // Get the selected booking ID and mechanic ID from the form
-            var booking_id = $('#anotherSelect').val();
-            var mechanic_id = $('#mechanic').val();
-
-            // Create the data to be sent as JSON to the Flask backend
-            var data = {
-                'booking_id': booking_id,
-                'mechanic_id': mechanic_id
-            };
-
-            // Send an AJAX POST request to the Flask backend
-            $.ajax({
-                type: 'POST',
-                url: '/update_mechanic',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    if (response.success) {
-                        // Mechanic updated successfully
-                        alert(response.message);
-                    } else {
-                        // Some error occurred
-                        alert(response.message);
-                    }
-                },
-                error: function() {
-                    alert('An error occurred while sending the request.');
-                }
-            });
-        });
-    });
 
    
 

@@ -26,8 +26,18 @@ def get_database_connection():
     cursor = connection.cursor()
     return connection, cursor
 
-@app.route('/')
-def index():
+
+
+
+
+
+
+
+#------------GET MECHANICS------------------------------------------------------------------------
+
+
+@app.route('/admin_schedule.html')
+def admin_schedule():
     connection, cursor = get_database_connection()
     cursor.execute('SELECT mechanic_id, name, surname FROM mechanics')
     mechanics_data = cursor.fetchall()
@@ -36,6 +46,7 @@ def index():
 
 
 
+#------------ASSIGN MECHANIC------------------------------------------------------------------------
 
     
 @app.route('/view_schedule', methods=['POST'])
@@ -94,8 +105,41 @@ def admin_view_roster():
 
 
 
-#-------------------------------------------------------------------------------------
 
+
+#------------ASSIGN STATUS PAGE------------------------------------------------------------------------
+
+@app.route('/admin_status', methods=['POST'])
+def admin_status():
+    data = request.get_json()
+    date = data.get('date')
+
+    if date:
+        # Get database connection and cursor
+        connection, cursor = get_database_connection()
+
+        # Retrieve bookings for the selected date with customer, vehicle, service, and booking status details
+        query = """
+            SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type, m.name, m.surname, b.booking_status
+            FROM bookings b
+            INNER JOIN customers c ON b.customer_id = c.customer_id
+            INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
+            INNER JOIN services s ON b.service_id = s.service_id
+            INNER JOIN mechanics m ON b.mechanic_id = m.mechanic_id
+            WHERE b.booking_date = %s
+        """
+        
+        cursor.execute(query, (date,))
+        booking_details = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'date': date, 'booking_details': booking_details})
+    
+    return jsonify({'date': None, 'booking_details': None})
+
+#-------------------------------------------------------------------------------------
 @app.route('/')
 def home():
     return redirect(url_for('login'))  # Redirect to the login page when first accessing the website
@@ -115,7 +159,9 @@ def admin_schedule1():
 @app.route('/admin_view_roster.html')
 def admin_view_roster1():
     return render_template('admin_view_roster.html')
-
+@app.route('/admin_status.html')
+def admin_status1():
+    return render_template('admin_status.html')
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
