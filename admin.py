@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import secrets
 import MySQLdb
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -68,7 +68,33 @@ def view_schedule():
     
     return jsonify({'date': None, 'booking_details': None})
 
+#------------STAFF ROSTER-------------------------------------------------------------------------
+@app.route('/admin_view_roster', methods=['GET', 'POST'])
+def admin_view_roster():
+    mechanics_list = []
+    if request.method == 'POST':
+        date_str = request.form['date']
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d')
 
+        for i in range(6): # Seçilen Pazartesi gününden sonraki 5 gün içerisinde
+            booking_date = selected_date + timedelta(days=i)
+            connection, cursor = get_database_connection()
+            query = """
+                SELECT m.name, m.surname
+                FROM bookings b
+                JOIN mechanics m ON b.mechanic_id = m.mechanic_id
+                WHERE b.booking_date = %s
+            """
+            cursor.execute(query, [booking_date])
+            mechanics = cursor.fetchall()
+            connection.close()
+            mechanics_list.append((booking_date.strftime('%Y-%m-%d'), mechanics))
+
+    return render_template('admin_view_roster.html', mechanics_list=mechanics_list)
+
+
+
+#-------------------------------------------------------------------------------------
 
 @app.route('/')
 def home():
@@ -85,6 +111,10 @@ def admin_invoice1():
 @app.route('/admin_schedule.html')
 def admin_schedule1():
     return render_template('admin_schedule.html')
+
+@app.route('/admin_view_roster.html')
+def admin_view_roster1():
+    return render_template('admin_view_roster.html')
 
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():

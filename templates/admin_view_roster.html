@@ -1,0 +1,48 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule</title>
+</head>
+<body>
+<h1>Schedule</h1>
+<form id="dateForm" action="{{ url_for('admin_view_roster') }}" method="post">
+    <label for="date">Select Date:</label>
+    <input type="date" id="date" name="date" oninput="disableDays(this)">
+    <input type="submit" value="View Roster">
+</form>
+<script>
+  function disableDays(dateInput) {
+    var selectedDate = new Date(dateInput.value);
+    if (selectedDate.getDay() !== 1) {
+      dateInput.value = '';
+      alert('Pazartesi günleri dışında tarih seçemezsiniz.');
+    }
+  }
+</script>
+<h1>Mechanics Roster</h1>
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Mechanics</th>
+    </tr>
+    {% for date, mechanics in mechanics_list %}
+        <tr>
+            <td>{{ date }}</td>
+            <td>
+                <ul>
+                    {% for name, surname in mechanics %}
+                        <li>{{ name }} {{ surname }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
+
+{% endblock %}
