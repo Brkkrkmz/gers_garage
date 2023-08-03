@@ -6,17 +6,42 @@
         <label for="date">Select Date:</label>
         <input type="date" id="date" name="date">
         <input type="button" value="View Schedule" onclick="viewSchedule()">
-        
-        <div class="row">
-            <div class="col-12">
-                <!-- Your table will be inserted here -->
-                <div id="schedule">
-                    <!-- AJAX response will be displayed here -->
-                </div>
-            </div>
-        </div>
     </form>
 
+    <div class="row">
+        <div class="col-12">
+            <!-- Your table will be inserted here -->
+            <div id="schedule">
+                <!-- AJAX response will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+  <!-- Booking ID Girişi -->
+<div id="bookingInput" style="display:none;">
+    <!-- Yeni bir input alanı ekleyin -->
+    <form id="assignMechanicForm">
+    <label for="booking_id">Choose Booking ID:</label>
+    <select id="anotherSelect" class="form-control">
+        <!-- Options will be dynamically added here -->
+    </select>
+
+        <div class="form-group">
+            <label for="mechanic">Choose mechanic:</label>
+            <select id="mechanic" name="mechanic" class="form-control">
+                {% for mechanic in mechanics_data %}
+                    <option value="{{ mechanic[0] }}">{{ mechanic[1] }} - {{ mechanic[2] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="ASSIGN">
+    </form>
+    </form>
+</div>
+</div>
+
+<!-- ... -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function viewSchedule() {
             const form = document.getElementById('dateForm');
@@ -42,7 +67,7 @@
                     const table = document.createElement('table');
                     table.id = 'example1'; // Add the id to the table
                     table.classList.add('table', 'table-bordered', 'table-striped'); // Add the class
-
+                    createOptionList(data);
                     // Create the table header
                     const tableHeader = document.createElement('thead');
                     tableHeader.innerHTML = `
@@ -53,6 +78,7 @@
                             <th>Vehicle Type</th>
                             <th>Vehicle Make</th>
                             <th>Service Type</th>
+                            <th>Mechanic</th>
                         </tr>
                     `;
 
@@ -67,6 +93,7 @@
                             <td>${booking[3]}</td>
                             <td>${booking[4]}</td>
                             <td>${booking[5]}</td>
+                            <td>${booking[6]} ${booking[7]}</td>
                         `;
                         tableBody.appendChild(row);
                     });
@@ -85,13 +112,78 @@
                         "autoWidth": false,
                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+                    // Show Booking ID Girişi and Assign Mechanic
+                    document.getElementById('bookingInput').style.display = 'block';
+                    document.getElementById('assignMechanic').style.display = 'block';
                 } else {
                     scheduleDiv.innerHTML = '<p>No bookings found for the selected date.</p>';
+                    // Hide Booking ID Girişi and Assign Mechanic
+                    document.getElementById('bookingInput').style.display = 'none';
+                    document.getElementById('assignMechanic').style.display = 'none';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         }
+
+        function createOptionList(data) {
+            const anotherSelect = document.getElementById('anotherSelect');
+            anotherSelect.innerHTML = ''; // Clear any previous options
+        
+            if (data.booking_details && data.booking_details.length > 0) {
+                data.booking_details.forEach(booking => {
+                    const option = document.createElement('option');
+                    option.value = booking[0]; // Set the booking ID as the option value
+                    option.textContent = booking[0]; // Display the booking ID as the option text
+                    anotherSelect.appendChild(option);   
+                });
+            }
+        }
+
+    
+        <!-- Make sure to include the jQuery library -->
+
+
+    $(document).ready(function() {
+        // When the form is submitted
+        $('#assignMechanicForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get the selected booking ID and mechanic ID from the form
+            var booking_id = $('#anotherSelect').val();
+            var mechanic_id = $('#mechanic').val();
+
+            // Create the data to be sent as JSON to the Flask backend
+            var data = {
+                'booking_id': booking_id,
+                'mechanic_id': mechanic_id
+            };
+
+            // Send an AJAX POST request to the Flask backend
+            $.ajax({
+                type: 'POST',
+                url: '/update_mechanic',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    if (response.success) {
+                        // Mechanic updated successfully
+                        alert(response.message);
+                    } else {
+                        // Some error occurred
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while sending the request.');
+                }
+            });
+        });
+    });
+
+   
+
     </script>
 {% endblock %}

@@ -14,6 +14,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'gersgarage'
 
+
 # Function to create and return a database connection and cursor
 def get_database_connection():
     connection = MySQLdb.connect(
@@ -25,6 +26,18 @@ def get_database_connection():
     cursor = connection.cursor()
     return connection, cursor
 
+@app.route('/')
+def index():
+    connection, cursor = get_database_connection()
+    cursor.execute('SELECT mechanic_id, name, surname FROM mechanics')
+    mechanics_data = cursor.fetchall()
+    connection.close()
+    return render_template('admin_schedule.html', mechanics_data=mechanics_data)
+
+
+
+
+    
 @app.route('/view_schedule', methods=['POST'])
 def view_schedule():
     data = request.get_json()
@@ -36,13 +49,15 @@ def view_schedule():
 
         # Retrieve bookings for the selected date with customer, vehicle, and service details
         query = """
-            SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type
-            FROM bookings b
-            INNER JOIN customers c ON b.customer_id = c.customer_id
-            INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
-            INNER JOIN services s ON b.service_id = s.service_id
-            WHERE b.booking_date = %s
-        """
+    SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type, m.name, m.surname
+    FROM bookings b
+    INNER JOIN customers c ON b.customer_id = c.customer_id
+    INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
+    INNER JOIN services s ON b.service_id = s.service_id
+    INNER JOIN mechanics m ON b.mechanic_id = m.mechanic_id
+    WHERE b.booking_date = %s
+      """
+        
         cursor.execute(query, (date,))
         booking_details = cursor.fetchall()
 
@@ -53,20 +68,7 @@ def view_schedule():
     
     return jsonify({'date': None, 'booking_details': None})
 
-# allocate_mechanic işlevi
-@app.route('/allocate_mechanic', methods=['POST'])
-def allocate_mechanic():
-    booking_id = request.form['booking_id']
-    mechanic_name = request.form['mechanic_name']
 
-    # Rezervasyonu güncelle ve mekanik atamayı kaydet
-    connection, cursor = get_database_connection()
-    cursor.execute("UPDATE bookings SET mechanic_name = %s WHERE booking_id = %s", (mechanic_name, booking_id))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-    return redirect(url_for('view_schedule'))
 
 @app.route('/')
 def home():
@@ -111,6 +113,39 @@ def validate_user(username, password):
     cursor.close()
     connection.close()
     return user
+
+
+# app.py
+# app.py
+
+
+@app.route('/update_mechanic', methods=['POST'])
+def update_mechanic():
+    data = request.get_json()
+    booking_id = data.get('booking_id')
+    mechanic_id = data.get('mechanic_id')
+
+    if booking_id and mechanic_id:
+        # Get database connection and cursor (You'll need to define get_database_connection function)
+        connection, cursor = get_database_connection()
+
+        # Update the mechanic_id for the booking in the database
+        query = "UPDATE bookings SET mechanic_id = %s WHERE booking_id = %s"
+        cursor.execute(query, (mechanic_id, booking_id))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'success': True, 'message': 'Mechanic updated successfully.'})
+    
+    return jsonify({'success': False, 'message': 'Booking ID or Mechanic ID is missing.'})
+
+
+
+
+
+
 
 @app.route('/logout')
 def logout():

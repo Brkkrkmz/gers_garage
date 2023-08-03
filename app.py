@@ -236,6 +236,7 @@ def add_booking():
         booking_type = request.form['booking_type']
         booking_date = request.form['booking_date']
         user_comments = request.form['user_comments']
+    
         # Determine service_id based on booking_status
 
          # Veritabanında service_type ile booking_type'ı karşılaştırarak service_id'yi alın
