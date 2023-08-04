@@ -16,28 +16,40 @@
             </div>
         </div>
     </div>
+         
+<!--  display flashed messages for assignin status -->
+<div id="flash-message" class="alert alert-success" style="display: none;">
 
-  <!-- Booking ID Girişi -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-success">
+         {{ messages[0] }}
+          </div>
+        {% endif %}
+    {% endwith %}
+    </div>
+
+<!-- Booking ID Girişi -->
 <div id="bookingInput" style="display:none;">
-    <!-- Yeni bir input alanı ekleyin -->
-    <form id="assignStatusForm">
-    <label for="booking_id">Choose Booking ID:</label>
-    <select id="anotherSelect" class="form-control">
-        <!-- Options will be dynamically added here -->
-    </select>
+    <form action="{{ url_for('update_status') }}" method="post"> <!-- Formu doğru yola gönderme işlemi -->
+        <select id="anotherSelect" class="form-control" name="booking_id">
+            <!-- Options will be dynamically added here -->
+        </select>
 
-    <div class="form-group">
-        <label for="static">Choose status:</label>
+        <div class="form-group">
+            <label for="static">Choose status:</label>
             <select id="status" name="status" class="form-control">
                 {% for status in status_data %}
                     <option value="{{ status[0] }}">{{ status[0] }}</option>
                 {% endfor %}
             </select>
-    </div>
+        </div>
 
         <input type="submit" value="ASSIGN">
-    </form>      
+        
+    </form> <!-- Form etiketini düzgün bir şekilde kapatma -->
 </div>
+
 
 
 <!-- ... -->
@@ -144,45 +156,31 @@
             }
         }
 
-   
-        $(document).ready(function() {
-        // When the form is submitted
-        $('#assignStatusForm').on('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
 
-            // Get the selected booking ID and status ID from the form
-            var booking_id = $('#anotherSelect').val();
-            var booking_status_id = $('#status').val();
+ 
 
-            // Create the data to be sent as JSON to the Flask backend
-            var data = {
-                'booking_id': booking_id,
-                'booking_status_id': booking_status_id
-            };
-
-            // Send an AJAX POST request to the Flask backend
-            $.ajax({
-            type: 'POST',
-            url: '/update_status',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(response) {
-                if (response.success) {
-                    // Mechanic updated successfully
-                    alert(response.message);
-                } else {
-                    // Some error occurred or missing data
-                    alert(response.message);
-                }
-            },
-            error: function(errorThrown) {
-                // Log the error to the console for debugging
-                console.error('AJAX Error:', errorThrown);
-                alert('An error occurred while sending the request. Please try again later.');
-                }
-            });
-        });
-    });
+  // JavaScript code to handle flashed messages to keep them short time
+  document.addEventListener("DOMContentLoaded", function () {
+    const flashMessage = document.getElementById("flash-message");
+    const messages = {{ get_flashed_messages()|tojson }};
+    
+    if (messages.length > 0) {
+      // Show the flashed message
+      flashMessage.innerHTML = messages[0];
+      flashMessage.style.display = "block";
+      
+      // Hide the flashed message after 3 seconds
+      setTimeout(function () {
+        flashMessage.style.display = "none";
+      }, 1500); // 3 seconds
+    }
+  });
 
     </script>
+
+
+
+</script>
 {% endblock %}
+   
+     

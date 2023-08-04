@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import secrets
-import MySQLdb
+import MySQLdb, mysql
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -233,29 +233,39 @@ def update_mechanic():
 
 """ ---------------------update status----------- """
 
-@app.route('/update_status', methods=['POST'])
+
+
+
+
+@app.route('/update_status', methods=["POST"])
 def update_status():
-    data = request.get_json()
-    booking_id = data.get('booking_id')
-    booking_status_id = data.get('booking_status_id')
+    # Formdan verileri al
+    booking_id = request.form.get('booking_id')  # Eksiksiz veri almak için get() kullanılabilir
+    status = request.form.get('status')
 
-    if booking_id and booking_status_id:
-        # Get database connection and cursor (You'll need to define get_database_connection function)
+    # Kullanıcı adının önceden kaydedilip kaydedilmediğini kontrol et
+    connection, cursor = get_database_connection()
+    cursor.execute("SELECT booking_status_id FROM booking_status WHERE status = %s", (status,))
+    booking_status_id = cursor.fetchone()
+    cursor.close()
+
+    if booking_status_id:
+        # Kullanıcının seçtiği durumu booking_status_id ile güncelle
         connection, cursor = get_database_connection()
-
-        # Update the mechanic_id for the booking in the database
-        query = "UPDATE bookings SET booking_status_id = %s WHERE booking_id = %s"
-        cursor.execute(query, (booking_status_id, booking_id))
+        cursor.execute("UPDATE bookings SET booking_status_id = %s WHERE booking_id = %s", (booking_status_id[0], booking_id))
         connection.commit()
-
         cursor.close()
         connection.close()
 
-        return jsonify({'success': True, 'message': 'Status updated successfully.'})
-    
-    return jsonify({'success': False, 'message': 'Booking ID or Status ID is missing.'})
+        
+        # Mesajı Flash ile ayarla
+        flash("Status for booking ID {} updated successfully to {}".format(booking_id, booking_status_id[0]), 'success')
+    else:
+        # booking_status_id veritabanında yok, hata mesajını Flash ile ayarla
+        flash("Status not found!", 'error')
 
-
+    # Aynı sayfada kal
+    return redirect(request.referrer)
 @app.route('/logout')
 def logout():
     # Kullanıcıyı çıkış yaparken session'dan sil
