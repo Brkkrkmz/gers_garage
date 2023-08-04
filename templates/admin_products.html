@@ -1,0 +1,175 @@
+{% extends "admin_base.html" %}
+
+{% block content %} 
+
+
+
+<!-- Trigger Button -->
+<a class="btn btn-app bg-secondary" data-toggle="modal" data-target="#addPartModal">
+  <span class="badge bg-success"></span>
+  <i class="fas fa-plus-circle"></i> Product +
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="addPartModal" tabindex="-1" role="dialog" aria-labelledby="addPartModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="addPartModalLabel">Add New Part</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="addPartForm" action="/add_part" method="POST">
+                  <label for="part_name">Part Name:</label>
+                  <input type="text" id="part_name" name="part_name" required>
+                  <br>
+                  <label for="part_cost">Part Cost:</label>
+                  <input type="number" id="part_cost" name="part_cost" required>
+                  <br>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" form="addPartForm" class="btn btn-primary">Add Part</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- ... (Diğer HTML kodları) -->
+
+<a class="btn btn-app bg-success" data-toggle="modal" data-target="#deletePartModal">
+  <span class="badge bg-purple"></span>
+  <i class="fas fa-minus-circle"></i> Product -
+</a>
+
+<!-- Silme Formu Modalı -->
+<div class="modal fade" id="deletePartModal" tabindex="-1" role="dialog" aria-labelledby="deletePartModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="deletePartModalLabel">Delete Part</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form action="/delete_part_form" method="post">
+                  <label for="part_id">Part ID:</label>
+                  <input type="number" id="part_id" name="part_id" required>
+                  <br>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- Güncelleme Formu Modalı -->
+<!-- admin_products.html -->
+
+<!-- ... (Diğer HTML kodları) -->
+
+<!-- "Product Update" Butonu -->
+
+<!-- Güncelleme Formu Modalı -->
+<!-- admin_products.html -->
+
+<!-- ... (Diğer HTML kodları) -->
+
+<!-- "Product Update" Butonu -->
+<!-- "Product Update" Butonu -->
+<a class="btn btn-app bg-danger" data-toggle="modal" data-target="#updatePartModal">
+  <span class="badge bg-teal"></span>
+  <i class="fas fa-check"></i> Product Update
+</a>
+
+<!-- Güncelleme Formu Modalı -->
+<div class="modal fade" id="updatePartModal" tabindex="-1" role="dialog" aria-labelledby="updatePartModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="updatePartModalLabel">Update Part</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form action="/update_part_form" method="post">
+                  <label for="part_id">Part ID:</label>
+                  <input type="number" id="part_id" name="part_id" required>
+                  <br>
+                  <label for="new_part_name">New Part Name:</label>
+                  <input type="text" id="new_part_name" name="new_part_name">
+                  <br>
+                  <label for="part_cost">Part Cost:</label>
+                  <input type="number" id="part_cost" name="part_cost" step="0.01" required>
+                  <br>
+                  <button type="submit" class="btn btn-success">Update</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- ... (Diğer HTML kodları) -->
+
+
+<!-- ... (Diğer HTML kodları) -->
+
+
+
+
+
+  
+                
+
+  <div class="row">
+    <div class="col-12">
+  
+      <div class="card">
+        <div class="card-header">
+        <h3 class="card-title">Mechanics Roster</h3>
+        </div>
+         <div class="card-body">
+           <table id="example1" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+              <th>Part ID</th>
+              <th>Part Name</th>
+              <th>Part Cost</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                {% for part in parts_data %}
+                
+                    <td>{{ part[0] }}</td>
+                    <td>{{ part[1] }}</td>
+                    <td>{{ part[2] }}</td>
+                </tr>
+                {% endfor %}
+           
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KsXJPKoVaG0DK8S3BCe2l/CzML8i5OzPIAopOMIXm38lX1Ffp1u2C/TprZMZi9Ow" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvf6/GwoGZAf8JpRMUzWkL9bFsqQmY8zgn7E6TVCm" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/cd6e0c3c27.js" crossorigin="anonymous"></script>
+
+{% endblock content %}

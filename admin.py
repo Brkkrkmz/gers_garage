@@ -113,7 +113,23 @@ def admin_view_roster():
     return render_template('admin_view_roster.html', mechanics_list=mechanics_list)
 
 
+#------------GET PARTS-------------------------------------------------------------------------
 
+
+@app.route('/admin_products.html')
+def admin_products():
+    # Veritabanı bağlantısı ve imlecini alın
+    connection, cursor = get_database_connection()
+
+    # 'parts' tablosundan verileri çekin
+    cursor.execute("SELECT part_id, part_name, part_cost FROM parts")
+    parts_data = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    # Verileri HTML şablonu ile gösterin
+    return render_template('admin_products.html', parts_data=parts_data)
 
 
 #------------ASSIGN STATUS PAGE------------------------------------------------------------------------
@@ -174,6 +190,10 @@ def admin_view_roster1():
 def admin_status1():
     return render_template('admin_status.html')
 
+
+@app.route('/admin_products.html')
+def admin_products1():
+    return render_template('admin_products.html')
 
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():
@@ -266,6 +286,117 @@ def update_status():
 
     # Aynı sayfada kal
     return redirect(request.referrer)
+
+
+
+""" ---------------------parca eklemeeee ----------- """
+
+# app.py
+
+# ... (Önceki kodlar)
+
+@app.route('/add_part', methods=['POST'])
+def add_part():
+    part_name = request.form.get('part_name')
+    part_cost = request.form.get('part_cost')
+
+    if part_name and part_cost:
+        # Veritabanı bağlantısı ve imlecini alın
+        connection, cursor = get_database_connection()
+
+        # 'parts' tablosuna yeni parçayı ekleyin
+        query = "INSERT INTO parts (part_name, part_cost) VALUES (%s, %s)"
+        cursor.execute(query, (part_name, part_cost))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        # Parçanın başarıyla eklenip eklenmediğini göstermek için mesajı Flash ile ayarlayın
+        flash("Part '{}' added successfully with cost '{}'".format(part_name, part_cost), 'success')
+    else:
+        # Eksik veri varsa hata mesajını Flash ile ayarlayın
+        flash("Missing part name or part cost!", 'error')
+
+    # Aynı sayfada kal
+    return redirect(request.referrer)
+
+
+""" ---------------------parca çıkarmaaaaaaa ----------- """
+#------------DELETE PART FORM-------------------------------------------------------------------------
+
+@app.route('/delete_part_form', methods=['POST'])
+def delete_part_form():
+    part_id = request.form.get('part_id')  # Formdan girilen parça ID'sini al
+
+    if part_id:
+        try:
+            part_id = int(part_id)  # Girilen değeri bir tamsayıya çevir
+        except ValueError:
+            flash("Invalid part ID. Please enter a valid number.", 'error')
+            return redirect(url_for('admin_products1'))  # Yanlış ID girildiyse ürünler sayfasına geri dön
+
+        # Veritabanı bağlantısı ve imlecini alın
+        connection, cursor = get_database_connection()
+
+        # Girilen parça ID'siyle parçayı veritabanından sil
+        query = "DELETE FROM parts WHERE part_id = %s"
+        cursor.execute(query, (part_id,))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        # Silme işlemi başarılıysa başarılı mesajı Flash ile ayarlanır
+        flash("Part with ID {} deleted successfully.".format(part_id), 'success')
+
+    # Ürünler sayfasına geri dön
+    return redirect(url_for('admin_products1'))
+
+#------------UPDATE PART FORM eklemeee-------------------------------------------------------------------------
+
+@app.route('/update_part_form', methods=['POST'])
+def update_part_form():
+    part_id = request.form.get('part_id')  # Formdan girilen parça ID'sini al
+    new_part_name = request.form.get('new_part_name')  # Formdan girilen yeni parça adını al
+    part_cost = request.form.get('part_cost')  # Formdan girilen parça fiyatını al
+
+    if part_id and part_cost:
+        try:
+            part_id = int(part_id)  # Girilen parça ID'sini tamsayıya çevir
+            part_cost = float(part_cost)  # Girilen parça fiyatını ondalıklı sayıya çevir
+        except ValueError:
+            flash("Invalid input. Please enter valid data.", 'error')
+            return redirect(url_for('admin_products1'))  # Yanlış veri girildiyse ürünler sayfasına geri dön
+
+        # Eğer yeni parça adı girilmemişse, mevcut parça adını veritabanından alın
+        if not new_part_name:
+            connection, cursor = get_database_connection()
+            cursor.execute("SELECT part_name FROM parts WHERE part_id = %s", (part_id,))
+            row = cursor.fetchone()
+            if row:
+                new_part_name = row[0]
+            cursor.close()
+            connection.close()
+
+        # Veritabanı bağlantısı ve imlecini alın
+        connection, cursor = get_database_connection()
+
+        # Girilen parça ID'siyle veritabanında parçayı güncelle
+        query = "UPDATE parts SET part_name = %s, part_cost = %s WHERE part_id = %s"
+        cursor.execute(query, (new_part_name, part_cost, part_id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        # Güncelleme işlemi başarılıysa başarılı mesajı Flash ile ayarlanır
+        flash("Part with ID {} updated successfully.".format(part_id), 'success')
+
+    # Ürünler sayfasına geri dön
+    return redirect(url_for('admin_products1'))
+
+
 @app.route('/logout')
 def logout():
     # Kullanıcıyı çıkış yaparken session'dan sil
