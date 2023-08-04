@@ -232,7 +232,6 @@ def add_booking():
     if 'user_id' in session:
         customer_id = session['user_id']
         licence_details = request.form['licence_details']
-        booking_status = "Booked"
         booking_type = request.form['booking_type']
         booking_date = request.form['booking_date']
         user_comments = request.form['user_comments']
@@ -260,7 +259,7 @@ def add_booking():
             return redirect('/booking.html')
         
         # Veritabanına rezervasyon bilgilerini eklemek için işlevi çağır
-        add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, booking_status, user_comments, licence_details)
+        add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details)
         flash("Booking added successfully.", "success")
         return redirect('/booking.html')
     else:
@@ -280,10 +279,10 @@ def get_vehicle_id_by_licence_details(licence_details):
 
 
 # Veritabanına rezervasyon bilgilerini eklemek için işlev
-def add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, booking_status, user_comments, licence_details):
+def add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details):
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO bookings (customer_id, vehicle_id, service_id, booking_date, booking_status, user_comments, licence_details) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (customer_id, vehicle_id, service_id, booking_date, booking_status, user_comments, licence_details))
+    cur.execute("INSERT INTO bookings (customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details) VALUES (%s, %s, %s, %s, %s, %s)",
+                (customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details))
     mysql.connection.commit()
     cur.close()
 

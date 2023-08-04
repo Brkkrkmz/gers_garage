@@ -27,7 +27,16 @@ def get_database_connection():
     return connection, cursor
 
 
+#------------GET STATUS------------------------------------------------------------------------
 
+
+@app.route('/admin_status.html')
+def admin_status2():
+    connection, cursor = get_database_connection()
+    cursor.execute('SELECT status FROM booking_status')
+    status_data = cursor.fetchall()
+    connection.close()
+    return render_template('admin_status.html', status_data=status_data)
 
 
 
@@ -120,12 +129,13 @@ def admin_status():
 
         # Retrieve bookings for the selected date with customer, vehicle, service, and booking status details
         query = """
-            SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type, m.name, m.surname, b.booking_status
+            SELECT b.booking_id, c.name, c.surname, v.vehicle_type, v.make, s.service_type, m.name, m.surname, f.status
             FROM bookings b
             INNER JOIN customers c ON b.customer_id = c.customer_id
             INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
             INNER JOIN services s ON b.service_id = s.service_id
             INNER JOIN mechanics m ON b.mechanic_id = m.mechanic_id
+            INNER JOIN booking_status f ON b.booking_status_id = f.booking_status_id
             WHERE b.booking_date = %s
         """
         
@@ -159,9 +169,12 @@ def admin_schedule1():
 @app.route('/admin_view_roster.html')
 def admin_view_roster1():
     return render_template('admin_view_roster.html')
+
 @app.route('/admin_status.html')
 def admin_status1():
     return render_template('admin_status.html')
+
+
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -218,9 +231,29 @@ def update_mechanic():
     return jsonify({'success': False, 'message': 'Booking ID or Mechanic ID is missing.'})
 
 
+""" ---------------------update status----------- """
 
+@app.route('/update_status', methods=['POST'])
+def update_status():
+    data = request.get_json()
+    booking_id = data.get('booking_id')
+    booking_status_id = data.get('booking_status_id')
 
+    if booking_id and booking_status_id:
+        # Get database connection and cursor (You'll need to define get_database_connection function)
+        connection, cursor = get_database_connection()
 
+        # Update the mechanic_id for the booking in the database
+        query = "UPDATE bookings SET booking_status_id = %s WHERE booking_id = %s"
+        cursor.execute(query, (booking_status_id, booking_id))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'success': True, 'message': 'Status updated successfully.'})
+    
+    return jsonify({'success': False, 'message': 'Booking ID or Status ID is missing.'})
 
 
 @app.route('/logout')

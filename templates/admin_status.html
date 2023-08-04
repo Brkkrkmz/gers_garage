@@ -1,7 +1,7 @@
 {% extends "admin_base.html" %}
 
 {% block content %} 
-    <h1>Schedule</h1>
+    <h1>Reservation Status</h1>
     <form id="dateForm">
         <label for="date">Select Date:</label>
         <input type="date" id="date" name="date">
@@ -27,23 +27,18 @@
     </select>
 
     <div class="form-group">
-        <form action="/admin_status" method="post">
-            <select name="status">
+        <label for="static">Choose status:</label>
+            <select id="status" name="status" class="form-control">
                 {% for status in status_data %}
                     <option value="{{ status[0] }}">{{ status[0] }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="Submit"> <!-- Gönder düğmesi eklendi -->
-        </form>
     </div>
-    
-    
-    
+
         <input type="submit" value="ASSIGN">
-        </form>
-      
+    </form>      
 </div>
-</div>
+
 
 <!-- ... -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -120,14 +115,14 @@
                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
-                    // Show Booking ID Girişi and Assign Mechanic
+                    // Show Booking ID Girişin 
                     document.getElementById('bookingInput').style.display = 'block';
-                    document.getElementById('assignMechanic').style.display = 'block';
+                  
                 } else {
                     scheduleDiv.innerHTML = '<p>No bookings found for the selected date.</p>';
-                    // Hide Booking ID Girişi and Assign Mechanic
+                    // Hide Booking ID Girişi 
                     document.getElementById('bookingInput').style.display = 'none';
-                    document.getElementById('assignMechanic').style.display = 'none';
+                  
                 }
             })
             .catch(error => {
@@ -150,6 +145,44 @@
         }
 
    
+        $(document).ready(function() {
+        // When the form is submitted
+        $('#assignStatusForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get the selected booking ID and status ID from the form
+            var booking_id = $('#anotherSelect').val();
+            var booking_status_id = $('#status').val();
+
+            // Create the data to be sent as JSON to the Flask backend
+            var data = {
+                'booking_id': booking_id,
+                'booking_status_id': booking_status_id
+            };
+
+            // Send an AJAX POST request to the Flask backend
+            $.ajax({
+            type: 'POST',
+            url: '/update_status',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.success) {
+                    // Mechanic updated successfully
+                    alert(response.message);
+                } else {
+                    // Some error occurred or missing data
+                    alert(response.message);
+                }
+            },
+            error: function(errorThrown) {
+                // Log the error to the console for debugging
+                console.error('AJAX Error:', errorThrown);
+                alert('An error occurred while sending the request. Please try again later.');
+                }
+            });
+        });
+    });
 
     </script>
 {% endblock %}
