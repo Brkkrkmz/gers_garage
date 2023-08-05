@@ -39,7 +39,16 @@ def admin_status2():
     return render_template('admin_status.html', status_data=status_data)
 
 
+#------------GET parts_used------------------------------------------------------------------------
 
+
+@app.route('/admin_invoice.html')
+def admin_invoice2():
+    connection, cursor = get_database_connection()
+    cursor.execute('SELECT part_id, part_name, part_cost FROM parts')
+    products_data = cursor.fetchall()
+    connection.close()
+    return render_template('admin_invoice.html', products_data=products_data)
 
 
 #------------GET MECHANICS------------------------------------------------------------------------
@@ -165,7 +174,66 @@ def admin_status():
     
     return jsonify({'date': None, 'booking_details': None})
 
-#-------------------------------------------------------------------------------------
+#----------------------get the information for invoice---------------------------------------------------------------
+
+    
+@app.route('/admin_invoice', methods=['POST'])
+def admin_invoice():
+    data = request.get_json()
+    date = data.get('date')
+
+    if date:
+        # Get database connection and cursor
+        connection, cursor = get_database_connection()
+
+        # Retrieve bookings for the selected date with customer, vehicle, and service details
+        query = """
+    SELECT b.booking_id, c.name, c.surname, c.mobile_phone, v.make, v.engine_type, s.service_type ,s.service_cost
+    FROM bookings b
+    INNER JOIN customers c ON b.customer_id = c.customer_id
+    INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
+    INNER JOIN services s ON b.service_id = s.service_id
+    WHERE b.booking_date = %s
+      """
+        
+        cursor.execute(query, (date,))
+        booking_details = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'date': date, 'booking_details': booking_details})
+    
+    return jsonify({'date': None, 'booking_details': None})
+#-------------------------assign parts on parts_used------------------------------------------------------------
+@app.route('/process_invoice', methods=['POST'])
+def process_invoice():
+    # Retrieve data from the form
+    booking_id = request.form.get('booking_id') 
+    products = request.form.getlist('product')
+   
+    if products:
+        connection, cursor = get_database_connection()
+        for product in products:
+            # Update the chosen part of the user with booking_id
+            cursor.execute("INSERT INTO parts_used (booking_id, part_id) VALUES (%s, %s)", (booking_id, product))
+            connection.commit()
+
+            # Set the message with Flash
+            flash("Part for booking ID {} added successfully to {}".format(booking_id, product), 'success')
+            
+        cursor.close()
+        connection.close()
+    else:
+        # No product selected, set the error message with Flash
+        flash("No product selected!", 'error')
+
+    # Stay on the same page
+    return redirect(request.referrer)
+
+
+
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))  # Redirect to the login page when first accessing the website
@@ -194,6 +262,8 @@ def admin_status1():
 @app.route('/admin_products.html')
 def admin_products1():
     return render_template('admin_products.html')
+
+
 
 @app.route('/admin_index', methods=['GET', 'POST'])
 def login():
@@ -227,6 +297,7 @@ def validate_user(username, password):
 # app.py
 # app.py
 
+""" ---------------------update mechanic for booking------------------- """
 
 @app.route('/update_mechanic', methods=['POST'])
 def update_mechanic():
