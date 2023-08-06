@@ -1,5 +1,5 @@
 {% extends "admin_base.html" %}
-    
+
 {% block content %}
 <h1>Invoice Creation </h1>
 <form id="dateForm">
@@ -51,6 +51,17 @@
   </div>
 </form>
 
+<label for="booking_id_second">Choose Another Booking ID:</label>
+<select id="anotherSelectSecond" class="form-control" name="booking_id_second">
+    <!-- Options will be dynamically added here -->
+</select>
+
+
+<!-- ------------invoice------------ -->
+<div id="bookingDetails" style="display:none;">
+    <!-- Booking details will be displayed here -->
+</div>
+<!-- ------------invoice------------ -->
 
 
 <!--admin_invoice -->
@@ -140,38 +151,88 @@
 
         function createOptionList(data) {
             const anotherSelect = document.getElementById('anotherSelect');
+            const anotherSelectSecond = document.getElementById('anotherSelectSecond');
             anotherSelect.innerHTML = ''; // Clear any previous options
-        
+            anotherSelectSecond.innerHTML = ''; // Clear any previous options for the second select list
+
             if (data.booking_details && data.booking_details.length > 0) {
                 data.booking_details.forEach(booking => {
                     const option = document.createElement('option');
                     option.value = booking[0]; // Set the booking ID as the option value
                     option.textContent = booking[0]; // Display the booking ID as the option text
-                    anotherSelect.appendChild(option);   
+
+                    // Create a copy of the option for the second select list
+                    const optionCopy = option.cloneNode(true);
+                    
+                    anotherSelect.appendChild(option);
+                    anotherSelectSecond.appendChild(optionCopy);  // Add the copy to the second select list
+                });
+
+                // Add event listener to the second select list
+                anotherSelectSecond.addEventListener('change', function() {
+                    const selectedBookingId = parseInt(this.value, 10); // Get the booking_id of the selected option
+                    const selectedBooking = data.booking_details.find(booking => booking[0] === selectedBookingId); // Find the booking with the selected booking_id
+                    displayBookingDetails(selectedBooking);
                 });
             }
         }
 
          // JavaScript code to handle flashed messages to keep them short time
-  document.addEventListener("DOMContentLoaded", function () {
-    const flashMessage = document.getElementById("flash-message");
-    const messages = {{ get_flashed_messages()|tojson }};
-    
-    if (messages.length > 0) {
-      // Show the flashed message
-      flashMessage.innerHTML = messages[0];
-      flashMessage.style.display = "block";
-      
-      // Hide the flashed message after 3 seconds
-      setTimeout(function () {
-        flashMessage.style.display = "none";
-      }, 1500); // 3 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+            const flashMessage = document.getElementById("flash-message");
+            const messages = {{ get_flashed_messages()|tojson }};
+            
+            if (messages.length > 0) {
+            // Show the flashed message
+            flashMessage.innerHTML = messages[0];
+            flashMessage.style.display = "block";
+            
+            // Hide the flashed message after 5 seconds
+            setTimeout(function () {
+                flashMessage.style.display = "none";
+            }, 5000);
+            }
+        });
+
+       
+        function displayBookingDetails(booking) {
+    const bookingDetailsDiv = document.getElementById('bookingDetails');
+    bookingDetailsDiv.innerHTML = ''; // Clear any previous booking details
+
+    if (booking && booking.length > 0) {
+        // Display the booking details
+        bookingDetailsDiv.innerHTML = `
+            <h2>Booking Details:</h2>
+            <p>Booking ID: ${booking[0]}</p>
+            <p>Customer Name: ${booking[1]} ${booking[2]}</p>
+            <p>Customer Contact: ${booking[3]}</p>
+            <p>Vehicle: ${booking[4]} ${booking[5]}</p>
+            <p>Service Type: ${booking[6]}</p>
+        `;
+
+        // Fetch parts for the selected booking
+        fetch(`/get_parts_for_booking?booking_id=${booking[0]}`)
+.then(response => response.json())
+.then(data => {
+    if(data.parts && data.parts.length > 0) {
+        data.parts.forEach(partArray => {
+            bookingDetailsDiv.innerHTML += `<p>Part Name: ${partArray[2]} - Cost: ${partArray[3]}</p>`;
+        });
     }
-  });
-   
+})
+.catch(error => {
+    console.error('Error fetching parts:', error);
+});
+
+
+        bookingDetailsDiv.style.display = 'block'; // Show the booking details
+    } else {
+        bookingDetailsDiv.style.display = 'none'; // Hide the booking details
+    }
+}
+
+
 
     </script>
+{% endblock %}
 
-
-
-{% endblock content %}
