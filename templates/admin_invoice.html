@@ -60,9 +60,26 @@
 <!-- ------------invoice------------ -->
 <div id="bookingDetails" style="display:none;">
     <!-- Booking details will be displayed here -->
+    
 </div>
-<!-- ------------invoice------------ -->
 
+<button id="printButton" onclick="printDiv('bookingDetails')">PRINT</button>
+
+<!-- ------------invoice------------ -->
+<style>
+    #bookingDetails {
+        background-color: rgb(244, 240, 240);
+        color: rgb(8, 1, 1);
+        padding: 15px;
+        border-radius: 5px;
+    }
+    #printButton {
+        background-color: black; /* Butonun arka plan rengi siyah */
+        color: white;           /* Buton üzerindeki yazı rengi beyaz */
+        border: none;           /* Kenarlıklar kaldırıldı */
+        padding: 10px 15px;     /* İç boşluklar eklenerek buton biraz daha büyük ve okunaklı hale getirildi */
+        cursor: pointer;  
+</style>
 
 <!--admin_invoice -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -85,7 +102,7 @@
                 scheduleDiv.innerHTML = '';
 
                 if (data.booking_details && data.booking_details.length > 0) {
-                    scheduleDiv.innerHTML = '<h2>Booking Details for ' + data.date + '</h2>';
+                    scheduleDiv.innerHTML = '<h2> Invoice  for ' + data.date + '</h2>';
 
                     // Create the table element and set its attributes
                     const table = document.createElement('table');
@@ -101,6 +118,7 @@
                             <th>Customer Contact</th>
                             <th>Vehicle</th>
                             <th>Service Type</th>
+                            <th>Service cost</th>
                         </tr>
                     `;
 
@@ -114,7 +132,7 @@
                             <td>${booking[3]}</td>
                             <td>${booking[4]} ${booking[5]}</td>
                             <td>${booking[6]}</td>
-                          
+                            <td>${booking[7]}</td>
                         `;
                         tableBody.appendChild(row);
                     });
@@ -202,27 +220,35 @@
     if (booking && booking.length > 0) {
         // Display the booking details
         bookingDetailsDiv.innerHTML = `
-            <h2>Booking Details:</h2>
+            <h2> INVOICE </h2>
             <p>Booking ID: ${booking[0]}</p>
             <p>Customer Name: ${booking[1]} ${booking[2]}</p>
             <p>Customer Contact: ${booking[3]}</p>
             <p>Vehicle: ${booking[4]} ${booking[5]}</p>
-            <p>Service Type: ${booking[6]}</p>
+            <p>   ${booking[6]} ${booking[7]}</p>
         `;
-
+        
         // Fetch parts for the selected booking
         fetch(`/get_parts_for_booking?booking_id=${booking[0]}`)
-.then(response => response.json())
-.then(data => {
-    if(data.parts && data.parts.length > 0) {
-        data.parts.forEach(partArray => {
-            bookingDetailsDiv.innerHTML += `<p>Part Name: ${partArray[2]} - Cost: ${partArray[3]}</p>`;
+        .then(response => response.json())
+        .then(data => {
+        if(data.parts && data.parts.length > 0) {
+            let totalCost = 0;
+            data.parts.forEach(partArray => {
+                let cost = parseFloat(partArray[3]); // stringi sayıya dönüştür
+                totalCost += cost;
+            bookingDetailsDiv.innerHTML += `<p>      ${partArray[2]} - Cost: ${partArray[3]}</p>`;
         });
+        totalCost += parseFloat(booking[7]);
+        bookingDetailsDiv.innerHTML += `<p>Total Cost: ${totalCost}</p>`;
+        
     }
 })
 .catch(error => {
     console.error('Error fetching parts:', error);
 });
+
+
 
 
         bookingDetailsDiv.style.display = 'block'; // Show the booking details
@@ -231,6 +257,16 @@
     }
 }
 
+function printDiv(divID) {
+    var printContents = document.getElementById(divID).innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+
+    window.print();
+
+    document.body.innerHTML = originalContents;
+}
 
 
     </script>
