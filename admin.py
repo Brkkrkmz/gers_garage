@@ -39,7 +39,7 @@ def admin_status2():
     return render_template('admin_status.html', status_data=status_data)
 
 
-#------------GET parts_used------------------------------------------------------------------------
+#------------GET PRODUCTS------------------------------------------------------------------------
 
 
 @app.route('/admin_invoice.html')
@@ -49,6 +49,33 @@ def admin_invoice2():
     products_data = cursor.fetchall()
     connection.close()
     return render_template('admin_invoice.html', products_data=products_data)
+
+#------------GET parts_used for invoice------------------------------------------------------------------------
+
+
+@app.route('/get_parts_for_booking')
+def get_parts_for_booking():
+    booking_id = request.args.get('booking_id')
+    if not booking_id:
+        return jsonify(error="booking_id is required"), 400
+
+    connection, cursor = get_database_connection()
+
+    query = """
+    SELECT u.booking_id, u.part_id, p.part_name, p.part_cost
+    FROM parts_used u
+    INNER JOIN parts p ON u.part_id = p.part_id
+    WHERE u.booking_id = %s
+    """ 
+    cursor.execute(query, (booking_id,))
+    parts = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify(parts=parts)
+
+
 
 
 #------------GET MECHANICS------------------------------------------------------------------------
