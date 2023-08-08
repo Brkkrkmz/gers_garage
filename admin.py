@@ -292,7 +292,7 @@ def admin_products1():
 
 
 
-@app.route('/admin_index', methods=['GET', 'POST'])
+@app.route('/admin_schedule', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -302,7 +302,7 @@ def login():
         if user:
             # Kullanıcı adı ve şifre doğru, giriş başarılı, ana sayfaya yönlendir
             session['user_id'] = user[0]  # User ID'yi session'a kaydet
-            return redirect('/admin_index.html')  # Redirect to admin_index.html after successful login
+            return redirect('/admin_schedule.html')  # Redirect to admin_index.html after successful login
         else:
             # Kullanıcı adı veya şifre yanlış, hata mesajıyla tekrar login sayfasına dön
             error_message = "Invalid username or password"
