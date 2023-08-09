@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<form id="get-status-form">
+    <label for="lisans_numarasi">Lisans Numarası:</label>
+    <input type="text" id="lisans_numarasi" name="lisans_numarasi">
+    <button type="submit">Durumu Getir</button>
+</form>
+
+<div id="status-result"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#get-status-form').submit(function(e) {
+            e.preventDefault();
+            var lisans_numarasi = $('#lisans_numarasi').val();
+
+            $.ajax({
+                url: '/get_status',
+                method: 'POST',
+                data: {lisans_numarasi: lisans_numarasi},
+                success: function(data) {
+                    $('#status-result').html('Durum: ' + data.status);
+                },
+                error: function(error) {
+                    $('#status-result').html('Durum alınamadı.');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+{% endblock %}
+

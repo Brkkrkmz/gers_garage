@@ -1,5 +1,3 @@
-/* add_vehicles.css */
-
 /* Stil içeriğini dışarıda ortalamak için kullanılan bir teknik */
 .content {
     max-width: 600px;
@@ -9,28 +7,28 @@
 
 /* Form etiketlerinin ve giriş alanlarının düzeni */
 form label {
-    display: block;
-    margin-bottom: 5px;
+    display: block; /* Etiketlerin blok seviyesinde görünmesini sağlar, her biri ayrı satırda görünür */
+    margin-bottom: 5px; /* Etiketlerin alt boşluğunu ayarlar, alanlar arasında 5px boşluk bırakır */
 }
 
 form select,
 form input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 100%; /* Seçenek ve input alanlarının genişliğini %100 olarak ayarlar, tüm genişliği kaplar */
+    padding: 10px; /* Seçenek ve input alanlarının iç boşluğunu ayarlar, içeriği boşluktan uzak tutar */
+    margin-bottom: 15px; /* Seçenek ve input alanlarının alt boşluğunu ayarlar, alanlar arasında 15px boşluk bırakır */
+    border: 1px solid #ccc; /* Seçenek ve input alanlarının kenarlık rengini ayarlar, #ccc ile gri renk */
+    border-radius: 4px; /* Seçenek ve input alanlarının köşelerini yuvarlar, 4px yuvarlak köşeler */
 }
 
 /* Submit butonu düzeni */
 form button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
+    background-color: #4CAF50; /* Buton arka plan rengini ayarlar, #4CAF50 ile yeşil renk */
+    color: white; /* Buton metin rengini ayarlar, beyaz renk */
+    padding: 10px 20px; /* Buton iç boşluğunu ayarlar, yatayda 10px, dikeyde 20px boşluk bırakır */
+    border: none; /* Butonun kenarlığını kaldırır, kenarlık yok */
+    border-radius: 4px; /* Butonun köşelerini yuvarlar, 4px yuvarlak köşeler */
+    cursor: pointer; /* Fare imlecini buton üzerine gelince el işareti yapar */
+    float: right; /* Butonu sağa yaslar, diğer içeriğin soluna gelir */
 }
 
 /* Select menüsünün stilini özelleştirme */
@@ -41,21 +39,21 @@ form select {
     -moz-appearance: none;
     padding-right: 25px; */
 
-    background-image: url("path/to/your_arrow_icon.png");
-    background-repeat: no-repeat;
-    background-position: right center;
+    background-image: url("path/to/your_arrow_icon.png"); /* Select menüsüne özel ok ikonu ekler */
+    background-repeat: no-repeat; /* Arkaplandaki ok ikonunun yinelenmesini engeller */
+    background-position: right center; /* Arkaplandaki ok ikonunun sağ ortada görünmesini sağlar */
 }
 
 /* Select menüsü seçeneklerinin stilini özelleştirme */
 form select option {
     /* İstenirse seçeneklerin arka plan ve metin rengini değiştirmek için aşağıdaki kod kullanılabilir */
-    /* background-color: #f9f9f9;
-    color: #333; */
+    /* background-color: #f9f9f9; */
+    /* color: #333; */
 }
 
 /* Uyarılar veya hatalar için stil */
 form input:invalid {
-    border: 1px solid #ff0000;
+    border: 1px solid #ff0000; /* Geçersiz (invalid) giriş alanlarının kenarlığını kırmızı yapar */
 }
 
 /* İsteğe bağlı olarak seçenekleri yatay hizalama */
@@ -75,3 +73,20 @@ form select,
 form input[type="text"] {
     flex-basis: calc(50% - 20px);
 }*/
+
+
+.flash-message {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.flash-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash-error {
+    background-color: #FF0000;
+    color: white;
+}

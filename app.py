@@ -19,35 +19,85 @@ app.config['MYSQL_DB'] = 'gersgarage'
 
 mysql = MySQL(app)
 
+#-------------------------------------------------durum getirme--------------------------------
+@app.route('/get_status', methods=['POST'])
+def get_status():
+    # Lisans numarasını al
+    lisans_numarasi = request.form['lisans_numarasi']
+
+    # Bookings tablosundan booking_status_id'yi al
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT booking_status_id FROM bookings WHERE licence_details = %s", (lisans_numarasi,))
+    booking_status_id = cursor.fetchone()
+    cursor.close()
+
+    if booking_status_id:
+        # Booking_status tablosundan istenen değeri al
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT status FROM booking_status WHERE booking_status_id = %s", (booking_status_id[0],))
+        status = cursor.fetchone()
+        cursor.close()
+
+        return jsonify({'status': status[0]})
+    else:
+        return jsonify({'status': 'Not Found'})
+
+
+
+
+
+
+
+
+
 
 
 # Araç ekleme işlemi
 @app.route('/add_vehicle', methods=["POST"])
 def add_vehicle():
     # Formdan verileri al
-    customer_id = session.get('user_id')  # Bu, oturum açmış kullanıcının ID'sini alıyoruz
+    customer_id = session.get('user_id')
     vehicle_type = request.form['vehicle_type']
     make = request.form['make']
-    licence_details = request.form['licence_details']  # Sütun adı "licence_details" olduğu için düzgün yazdığınızdan emin olun
+    licence_details = request.form['licence_details']
     engine_type = request.form['engine_type']
 
     # Veritabanına veri eklemek için işlevi çağır
-    add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type)
+    result = add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type)
 
-    flash("Vehicle added successfully.", "success")
+    if result:
+        flash("Vehicle added successfully.", "success")
+    else:
+        flash("A vehicle with the same license number already exists.", "error")
+
     return redirect('/add_vehicle.html')
 
 
 # Veritabanına veri eklemek için işlev
 def add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type):
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO vehicles (customer_id, vehicle_type, make, licence_details, engine_type) VALUES (%s, %s, %s, %s, %s)",
-                (customer_id, vehicle_type, make, licence_details, engine_type))
-    mysql.connection.commit()
-    cur.close()
+
+    # Lisans numarasını veritabanında sorgula
+    cur.execute("SELECT COUNT(*) FROM vehicles WHERE licence_details = %s", (licence_details,))
+    count = cur.fetchone()[0]
+
+    if count > 0:
+        # Eğer lisans numarası zaten veritabanında varsa ekleme işlemini yapma
+        cur.close()
+        return False
+    else:
+        # Eğer lisans numarası veritabanında yoksa aracı ekle
+        cur.execute("INSERT INTO vehicles (customer_id, vehicle_type, make, licence_details, engine_type) VALUES (%s, %s, %s, %s, %s)",
+                    (customer_id, vehicle_type, make, licence_details, engine_type))
+        mysql.connection.commit()
+        cur.close()
+        return True
 
 
 
+@app.route('/vehicle_status.html')
+def vehicle_status():
+    return render_template('vehicle_status.html')
 
 @app.route('/index.html')
 def index():
@@ -96,7 +146,24 @@ def home():
 
     return redirect('/login.html')
 
+def is_valid_password(password):
+    # Şifrenin en az 9 karakter uzunluğunda olup olmadığını kontrol et
+    if len(password) < 9:
+        return False
 
+    # Şifrenin en az bir rakam içerip içermediğini kontrol et
+    if not any(char.isdigit() for char in password):
+        return False
+
+    # Şifrenin en az bir harf içerip içermediğini kontrol et
+    if not any(char.isalpha() for char in password):
+        return False
+
+    # Şifrenin en az bir noktalama işareti içerip içermediğini kontrol et
+    if not any(char in r"!@#$%^&*()_+-=[]{}|\;:'\",.<>/?`~" for char in password):
+        return False
+
+    return True
 
 
 @app.route('/add_user', methods=["POST"])
@@ -119,6 +186,13 @@ def add_user():
     # Şifrelerin eşleşip eşleşmediğini kontrol et
     if password1 != password2:
         message = "Passwords do not match. Please try again."
+        return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
+                               username=username, phone=phone)
+    
+
+     # Şifre gereksinimlerini kontrol et
+    if not is_valid_password(password1):
+        message = "Password must be at least 9 characters long and contain at least one digit, one letter, and one special character."
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
