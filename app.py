@@ -120,12 +120,6 @@ def vehicle():
 def contact():
     return render_template('contact.html')
 
-
-@app.route('/prices.html')
-def price():
-    return render_template('prices.html')
-
-
 @app.route('/about.html')
 def about():
     return render_template('about.html')
@@ -291,6 +285,10 @@ def myprofile():
 @app.route('/booking.html')
 def booking():
 # Check user session
+
+    if 'user_id' not in session or not session['user_id']:
+      
+        return redirect('/login.html')
     if 'user_id' in session:
         user_id = session['user_id']
         cursor = mysql.connection.cursor()
@@ -381,6 +379,24 @@ def add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, user_co
                 (customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details))
     mysql.connection.commit()
     cur.close()
+
+
+@app.route('/prices.html')
+def show_parts():
+
+        cursor=mysql.connection.cursor()
+        cursor.execute("SELECT part_id, part_name, part_cost FROM parts")
+        parts_data = cursor.fetchall()
+        print(parts_data)
+        cursor.close()
+
+        
+        # Sending data to html
+        return render_template('prices.html', parts_data=parts_data)
+   
+
+
+
 
 
 

@@ -1,12 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Welcome to Ger's Garage!</h2>
-<p>We offer various automotive services at affordable prices.</p>
 
+<h1>Part Prices</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Part ID</th>
+            <th>Part Name</th>
+            <th>Part Cost</th>
+        </tr>
+    </thead>
+    <tbody>
 
+     
+        {% for part in parts_data %}
+        <tr>
+            <td>{{ part[0] }}</td> <!-- part_id -->
+            <td>{{ part[1] }}</td> <!-- part_name -->
+            <td>{{ part[2] }}</td> <!-- part_cost -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='price.css') }}">
 
 
 {% endblock %}

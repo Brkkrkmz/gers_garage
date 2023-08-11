@@ -152,6 +152,7 @@ def admin_view_roster():
 #------------GET PARTS-------------------------------------------------------------------------
 
 
+
 @app.route('/admin_products.html')
 def admin_products():
     # cursor task for database
@@ -168,6 +169,7 @@ def admin_products():
     # i am sending data to html
     return render_template('admin_products.html', parts_data=parts_data)
 
+  
 
 #------------ASSIGN STATUS PAGE------------------------------------------------------------------------
 
@@ -504,6 +506,12 @@ def update_part_form():
 
     # return product page
     return redirect(url_for('admin_products'))
+
+
+
+
+
+
 
 
 @app.route('/logout')
