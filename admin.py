@@ -8,7 +8,7 @@ app.secret_key = secrets.token_hex(16)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
 
-# MySQL yapılandırması
+# MySQL for database 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
@@ -127,12 +127,12 @@ def view_schedule():
 #------------STAFF ROSTER-------------------------------------------------------------------------
 @app.route('/admin_view_roster', methods=['GET', 'POST'])
 def admin_view_roster():
-    mechanics_list = []
+    mechanics_list = [] 
     if request.method == 'POST':
         date_str = request.form['date']
         selected_date = datetime.strptime(date_str, '%Y-%m-%d')
 
-        for i in range(6): # Seçilen Pazartesi gününden sonraki 5 gün içerisinde
+        for i in range(6): # All 5 days after the selected Monday
             booking_date = selected_date + timedelta(days=i)
             connection, cursor = get_database_connection()
             query = """
@@ -154,17 +154,18 @@ def admin_view_roster():
 
 @app.route('/admin_products.html')
 def admin_products():
-    # Veritabanı bağlantısı ve imlecini alın
+    # cursor task for database
     connection, cursor = get_database_connection()
 
-    # 'parts' tablosundan verileri çekin
+    # 'I'm pulling data from parts table
+
     cursor.execute("SELECT part_id, part_name, part_cost FROM parts")
     parts_data = cursor.fetchall()
 
     cursor.close()
     connection.close()
 
-    # Verileri HTML şablonu ile gösterin
+    # i am sending data to html
     return render_template('admin_products.html', parts_data=parts_data)
 
 
@@ -300,11 +301,14 @@ def login():
 
         user = validate_user(username, password)
         if user:
-            # Kullanıcı adı ve şifre doğru, giriş başarılı, ana sayfaya yönlendir
-            session['user_id'] = user[0]  # User ID'yi session'a kaydet
+            # Username and password correct, login successful, redirect to home page
+
+            session['user_id'] = user[0]  #Save User ID to session
+
             return redirect('/admin_schedule.html')  # Redirect to admin_index.html after successful login
         else:
-            # Kullanıcı adı veya şifre yanlış, hata mesajıyla tekrar login sayfasına dön
+            #Username or password incorrect, return to login page with error message
+
             error_message = "Invalid username or password"
             return render_template('admin_login.html', error_message=error_message)
 
@@ -321,8 +325,7 @@ def validate_user(username, password):
     return user
 
 
-# app.py
-# app.py
+
 
 """ ---------------------update mechanic for booking------------------- """
 
@@ -358,17 +361,19 @@ def update_mechanic():
 @app.route('/update_status', methods=["POST"])
 def update_status():
     # Formdan verileri al
-    booking_id = request.form.get('booking_id')  # Eksiksiz veri almak için get() kullanılabilir
+    booking_id = request.form.get('booking_id')  # 
     status = request.form.get('status')
 
-    # Kullanıcı adının önceden kaydedilip kaydedilmediğini kontrol et
+    #,Check if username is already registered
+
     connection, cursor = get_database_connection()
     cursor.execute("SELECT booking_status_id FROM booking_status WHERE status = %s", (status,))
     booking_status_id = cursor.fetchone()
     cursor.close()
 
     if booking_status_id:
-        # Kullanıcının seçtiği durumu booking_status_id ile güncelle
+        # Update user selected status with booking_status_id
+
         connection, cursor = get_database_connection()
         cursor.execute("UPDATE bookings SET booking_status_id = %s WHERE booking_id = %s", (booking_status_id[0], booking_id))
         connection.commit()
@@ -376,22 +381,23 @@ def update_status():
         connection.close()
 
         
-        # Mesajı Flash ile ayarla
+        #  I'm giving a message
+
         flash("Status for booking ID {} updated successfully to {}".format(booking_id, booking_status_id[0]), 'success')
     else:
-        # booking_status_id veritabanında yok, hata mesajını Flash ile ayarla
+        #booking_status_id not in database, set error message with Flash
+
         flash("Status not found!", 'error')
 
-    # Aynı sayfada kal
+    # to stay on the same page
+
     return redirect(request.referrer)
 
 
 
-""" ---------------------parca eklemeeee ----------- """
+""" ---------------------add  part ----------- """
 
-# app.py
 
-# ... (Önceki kodlar)
 
 @app.route('/add_part', methods=['POST'])
 def add_part():
@@ -399,10 +405,11 @@ def add_part():
     part_cost = request.form.get('part_cost')
 
     if part_name and part_cost:
-        # Veritabanı bağlantısı ve imlecini alın
+# Get database connection and cursor
         connection, cursor = get_database_connection()
 
-        # 'parts' tablosuna yeni parçayı ekleyin
+        # add the new part to the 'parts' table
+
         query = "INSERT INTO parts (part_name, part_cost) VALUES (%s, %s)"
         cursor.execute(query, (part_name, part_cost))
         connection.commit()
@@ -410,13 +417,13 @@ def add_part():
         cursor.close()
         connection.close()
 
-        # Parçanın başarıyla eklenip eklenmediğini göstermek için mesajı Flash ile ayarlayın
+# Set the message with Flash to show if the track was added successfully
         flash("Part '{}' added successfully with cost '{}'".format(part_name, part_cost), 'success')
     else:
-        # Eksik veri varsa hata mesajını Flash ile ayarlayın
+#I send a message if there is missing data
         flash("Missing part name or part cost!", 'error')
 
-    # Aynı sayfada kal
+#stay on the same page
     return redirect(request.referrer)
 
 
@@ -425,19 +432,22 @@ def add_part():
 
 @app.route('/delete_part_form', methods=['POST'])
 def delete_part_form():
-    part_id = request.form.get('part_id')  # Formdan girilen parça ID'sini al
+    part_id = request.form.get('part_id')  # Get partID from form
 
     if part_id:
         try:
-            part_id = int(part_id)  # Girilen değeri bir tamsayıya çevir
+            part_id = int(part_id)  #convert to integer
+
         except ValueError:
             flash("Invalid part ID. Please enter a valid number.", 'error')
-            return redirect(url_for('admin_products1'))  # Yanlış ID girildiyse ürünler sayfasına geri dön
+            return redirect(url_for('admin_products'))  # In case of wrong id entered
 
-        # Veritabanı bağlantısı ve imlecini alın
+
+       # Get database connection and cursor
+
         connection, cursor = get_database_connection()
 
-        # Girilen parça ID'siyle parçayı veritabanından sil
+# Delete the part from the database with the part ID entered
         query = "DELETE FROM parts WHERE part_id = %s"
         cursor.execute(query, (part_id,))
         connection.commit()
@@ -445,29 +455,30 @@ def delete_part_form():
         cursor.close()
         connection.close()
 
-        # Silme işlemi başarılıysa başarılı mesajı Flash ile ayarlanır
+# If the deletion is successful, the successful message is set with Flash
         flash("Part with ID {} deleted successfully.".format(part_id), 'success')
 
-    # Ürünler sayfasına geri dön
-    return redirect(url_for('admin_products1'))
+    #return product page
+    return redirect(url_for('admin_products'))
 
 #------------UPDATE PART FORM eklemeee-------------------------------------------------------------------------
 
 @app.route('/update_part_form', methods=['POST'])
 def update_part_form():
-    part_id = request.form.get('part_id')  # Formdan girilen parça ID'sini al
-    new_part_name = request.form.get('new_part_name')  # Formdan girilen yeni parça adını al
-    part_cost = request.form.get('part_cost')  # Formdan girilen parça fiyatını al
+    part_id = request.form.get('part_id')  # 
+    new_part_name = request.form.get('new_part_name')  # Im taking informaton from form
+    part_cost = request.form.get('part_cost')  #
 
     if part_id and part_cost:
         try:
-            part_id = int(part_id)  # Girilen parça ID'sini tamsayıya çevir
-            part_cost = float(part_cost)  # Girilen parça fiyatını ondalıklı sayıya çevir
+            part_id = int(part_id)  
+            part_cost = float(part_cost)  
         except ValueError:
             flash("Invalid input. Please enter valid data.", 'error')
-            return redirect(url_for('admin_products1'))  # Yanlış veri girildiyse ürünler sayfasına geri dön
+            return redirect(url_for('admin_products'))  # Return to products page if incorrect data was entered
 
-        # Eğer yeni parça adı girilmemişse, mevcut parça adını veritabanından alın
+
+# If no new track name is entered, retrieve existing track name from database
         if not new_part_name:
             connection, cursor = get_database_connection()
             cursor.execute("SELECT part_name FROM parts WHERE part_id = %s", (part_id,))
@@ -477,10 +488,10 @@ def update_part_form():
             cursor.close()
             connection.close()
 
-        # Veritabanı bağlantısı ve imlecini alın
+# Get database connection and cursor
         connection, cursor = get_database_connection()
 
-        # Girilen parça ID'siyle veritabanında parçayı güncelle
+# Update the part in the database with the part ID entered
         query = "UPDATE parts SET part_name = %s, part_cost = %s WHERE part_id = %s"
         cursor.execute(query, (new_part_name, part_cost, part_id))
 
@@ -488,16 +499,16 @@ def update_part_form():
         cursor.close()
         connection.close()
 
-        # Güncelleme işlemi başarılıysa başarılı mesajı Flash ile ayarlanır
+# If the update process is successful, the message is set with Flash
         flash("Part with ID {} updated successfully.".format(part_id), 'success')
 
-    # Ürünler sayfasına geri dön
-    return redirect(url_for('admin_products1'))
+    # return product page
+    return redirect(url_for('admin_products'))
 
 
 @app.route('/logout')
 def logout():
-    # Kullanıcıyı çıkış yaparken session'dan sil
+# Delete the user from session on logout
     session.pop('user_id', None)
     return redirect(url_for('login'))
 

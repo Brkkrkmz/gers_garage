@@ -1,0 +1,56 @@
+/* Genel stil ayarları */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Form stili */
+#get-status-form {
+    background-color: #fff;
+    padding: 20px;
+    width: 300px;
+    margin: 50px auto;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+#get-status-form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#get-status-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#get-status-form button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#get-status-form button:hover {
+    background-color: #0056b3;
+}
+
+/* Sonuç bölümü stili */
+#status-result {
+    width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+}

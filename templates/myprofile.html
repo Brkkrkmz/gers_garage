@@ -8,12 +8,12 @@
             
 
 
-            <h2>İletişim Bilgileriniz</h2>
+            <h2>Contact Information</h2>
             <p>Your name:{{name}}</p>
             <p>Your surname:{{surname}}</p>
             <p>Your email: {{ email }}</p>
             <p>Your phone number: {{ mobile_phone }}</p>
-            <h2>Araç Bilgileriniz</h2>
+            <h2>Vehicle Information</h2>
             
             <table>
                 <thead>
@@ -46,17 +46,17 @@
    
     
     <div class="buttons-container">
-        <a href="add_vehicle.html">Araç Ekle</a>
-        <a href="#">Araç Bilgilerini Güncelle</a>
-        <a href="#">İletişim Bilgilerini Güncelle</a>
-        <a href="booking.html">Rezervasyon Yap</a>
-        <a href="vehicle_status.html">Arac durumunu ögren</a>
+        <a href="add_vehicle.html">Add Vehicle</a>
+        <a href="#">Update Vehicle information</a>
+        <a href="#">Update Contact Information</a>
+        <a href="booking.html"> Make a reservation </a>
+        <a href="vehicle_status.html">Get Vehicle Status</a>
 
     </div>
 
     <footer class="footer">
         <p>&copy; 2023 Ger's Garage. </p>
     </footer>
-    <!-- CSS dosyasını referans et -->
+    <!-- Css reference -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='myprofile.css') }}">
 {% endblock %}

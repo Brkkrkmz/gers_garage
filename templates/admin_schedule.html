@@ -10,16 +10,16 @@
 
 <div class="row">
     <div class="col-12">
-        <!-- Your table will be inserted here -->
+    
         <div id="schedule">
-            <!-- AJAX response will be displayed here -->
+    
         </div>
     </div>
 </div>
 
-<!-- Booking ID Girişi -->
+<!-- Booking ID Entry-->
 <div id="bookingInput" style="display:none;">
-    <!-- Yeni bir input alanı ekleyin -->
+ 
     <form id="assignMechanicForm">
         <label for="booking_id">Choose Booking ID:</label>
         <select id="anotherSelect" class="form-control">
@@ -45,7 +45,8 @@
             const form = document.getElementById('dateForm');
             const date = form.elements['date'].value;
 
-            // AJAX ile Flask view_schedule endpointine istek gönderiyorum.
+            // AJAX ile Flask view_schedule endpointine  I'm sending request.
+
             fetch(`/view_schedule`, {
                 method: 'POST',
                 headers: {
@@ -111,12 +112,12 @@
                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
-                    // Show Booking ID Girişi and Assign Mechanic
+                    // Show Booking ID Entry and Assign Mechanic
                     document.getElementById('bookingInput').style.display = 'block';
                     document.getElementById('assignMechanic').style.display = 'block';
                 } else {
                     scheduleDiv.innerHTML = '<p>No bookings found for the selected date.</p>';
-                    // Hide Booking ID Girişi and Assign Mechanic
+                    // Hide Booking ID Entry and Assign Mechanic
                     document.getElementById('bookingInput').style.display = 'none';
                     document.getElementById('assignMechanic').style.display = 'none';
                 }

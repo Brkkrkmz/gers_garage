@@ -74,10 +74,12 @@
         border-radius: 5px;
     }
     #printButton {
-        background-color: black; /* Butonun arka plan rengi siyah */
-        color: white;           /* Buton üzerindeki yazı rengi beyaz */
-        border: none;           /* Kenarlıklar kaldırıldı */
-        padding: 10px 15px;     /* İç boşluklar eklenerek buton biraz daha büyük ve okunaklı hale getirildi */
+        background-color: black; /* Button  backround  black */
+        color: white;           /* The text on the button is white
+ */
+        border: none;           /* I removed the borders
+ */
+        padding: 10px 15px;     
         cursor: pointer;  
 </style>
 
@@ -152,12 +154,12 @@
                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
-                    // Show Booking ID Girişi and Assign Mechanic
+                    // Show Booking ID Entry and Assign Mechanic
                     document.getElementById('bookingInput').style.display = 'block';
                     
                 } else {
                     scheduleDiv.innerHTML = '<p>No bookings found for the selected date.</p>';
-                    // Hide Booking ID Girişi and Assign Mechanic
+                    // Hide Booking ID Enrtr and Assign Mechanic
                     document.getElementById('bookingInput').style.display = 'none';
                     
                 }
@@ -235,7 +237,7 @@
         if(data.parts && data.parts.length > 0) {
             let totalCost = 0;
             data.parts.forEach(partArray => {
-                let cost = parseFloat(partArray[3]); // stringi sayıya dönüştür
+                let cost = parseFloat(partArray[3]); // string to  integer 
                 totalCost += cost;
             bookingDetailsDiv.innerHTML += `<p>      ${partArray[2]} - Cost: ${partArray[3]}</p>`;
         });

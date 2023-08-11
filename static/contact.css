@@ -1,4 +1,4 @@
-/* Genel stiller */
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -15,8 +15,8 @@ body {
     margin-bottom: 10px;
   }
   
-  /* İletişim bilgileri için stiller */
-  .contact-info {
+/* Styles for contact information */
+.contact-info {
     margin-top: 30px;
   }
   
@@ -30,7 +30,7 @@ body {
     margin-bottom: 5px;
   }
   
-  /* Harita bölümü için stiller */
+  /* for  map  */
   .map-container {
     margin-top: 30px;
   }

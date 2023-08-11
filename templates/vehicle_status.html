@@ -4,9 +4,9 @@
 {% block content %}
 
 <form id="get-status-form">
-    <label for="lisans_numarasi">Lisans Numarası:</label>
+    <label for="lisans_numarasi"> License number:</label>
     <input type="text" id="lisans_numarasi" name="lisans_numarasi">
-    <button type="submit">Durumu Getir</button>
+    <button type="submit">Bring the situation</button>
 </form>
 
 <div id="status-result"></div>
@@ -23,10 +23,10 @@
                 method: 'POST',
                 data: {lisans_numarasi: lisans_numarasi},
                 success: function(data) {
-                    $('#status-result').html('Durum: ' + data.status);
+                    $('#status-result').html('Status: ' + data.status);
                 },
                 error: function(error) {
-                    $('#status-result').html('Durum alınamadı.');
+                    $('#status-result').html('Status could not get.');
                 }
             });
         });
@@ -38,7 +38,7 @@
 
 
 
-
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vehicle_status.css') }}">
 
 {% endblock %}
 

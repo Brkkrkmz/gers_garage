@@ -11,7 +11,7 @@ app.secret_key = secrets.token_hex(16)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
 
-# MySQL yapılandırması
+# MySQL Connection
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
@@ -19,20 +19,20 @@ app.config['MYSQL_DB'] = 'gersgarage'
 
 mysql = MySQL(app)
 
-#-------------------------------------------------durum getirme--------------------------------
+#-------------------------------------------------get status for  car --------------------------------
 @app.route('/get_status', methods=['POST'])
 def get_status():
-    # Lisans numarasını al
+    # Get license number
     lisans_numarasi = request.form['lisans_numarasi']
 
-    # Bookings tablosundan booking_status_id'yi al
+    #   get  booking_status_id from bookings table
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT booking_status_id FROM bookings WHERE licence_details = %s", (lisans_numarasi,))
     booking_status_id = cursor.fetchone()
     cursor.close()
 
     if booking_status_id:
-        # Booking_status tablosundan istenen değeri al
+        #  get value from Booking_status table 
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT status FROM booking_status WHERE booking_status_id = %s", (booking_status_id[0],))
         status = cursor.fetchone()
@@ -52,17 +52,18 @@ def get_status():
 
 
 
-# Araç ekleme işlemi
+      #   ADD VEHİCLE
 @app.route('/add_vehicle', methods=["POST"])
 def add_vehicle():
-    # Formdan verileri al
+    # get data from form
     customer_id = session.get('user_id')
     vehicle_type = request.form['vehicle_type']
     make = request.form['make']
     licence_details = request.form['licence_details']
     engine_type = request.form['engine_type']
 
-    # Veritabanına veri eklemek için işlevi çağır
+
+    # Call function to insert data into database
     result = add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type)
 
     if result:
@@ -73,20 +74,22 @@ def add_vehicle():
     return redirect('/add_vehicle.html')
 
 
-# Veritabanına veri eklemek için işlev
+# Function to insert data into database
+
 def add_vehicle_to_db(customer_id, vehicle_type, make, licence_details, engine_type):
     cur = mysql.connection.cursor()
 
-    # Lisans numarasını veritabanında sorgula
+    # Query the license number in the database
     cur.execute("SELECT COUNT(*) FROM vehicles WHERE licence_details = %s", (licence_details,))
     count = cur.fetchone()[0]
 
     if count > 0:
-        # Eğer lisans numarası zaten veritabanında varsa ekleme işlemini yapma
+       # If the license number is already in the database, do not add it
         cur.close()
         return False
     else:
-        # Eğer lisans numarası veritabanında yoksa aracı ekle
+        # If the license number is not in the database, add the agent
+
         cur.execute("INSERT INTO vehicles (customer_id, vehicle_type, make, licence_details, engine_type) VALUES (%s, %s, %s, %s, %s)",
                     (customer_id, vehicle_type, make, licence_details, engine_type))
         mysql.connection.commit()
@@ -140,26 +143,26 @@ def register():
 
 @app.route('/')
 def home():
-    # Kullanıcı oturumunu kontrol et
+# Check user session
     if 'user_id' in session:
         return redirect('/myprofile.html')
 
     return redirect('/login.html')
 
 def is_valid_password(password):
-    # Şifrenin en az 9 karakter uzunluğunda olup olmadığını kontrol et
+# Check if the password is at least 9 characters long
     if len(password) < 9:
         return False
 
-    # Şifrenin en az bir rakam içerip içermediğini kontrol et
+# Check if the password contains at least one digit
     if not any(char.isdigit() for char in password):
         return False
 
-    # Şifrenin en az bir harf içerip içermediğini kontrol et
+# Check if the password contains at least one letter
     if not any(char.isalpha() for char in password):
         return False
 
-    # Şifrenin en az bir noktalama işareti içerip içermediğini kontrol et
+# Check if the password contains at least one punctuation mark
     if not any(char in r"!@#$%^&*()_+-=[]{}|\;:'\",.<>/?`~" for char in password):
         return False
 
@@ -168,7 +171,7 @@ def is_valid_password(password):
 
 @app.route('/add_user', methods=["POST"])
 def add_user():
-    # Formdan verileri al
+# Get data from form
     firstName = request.form['firstName']
     lastName = request.form['lastName']
     email = request.form['email']
@@ -177,26 +180,26 @@ def add_user():
     username = request.form['username']
     phone = request.form['phone']
 
-    # Boş alan kontrolü yap
+     # Check for free space
     if not firstName or not lastName or not email or not password1 or not password2 or not username or not phone:
         message = "Please fill in all fields"
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
-    # Şifrelerin eşleşip eşleşmediğini kontrol et
+ # Check if passwords match
     if password1 != password2:
         message = "Passwords do not match. Please try again."
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
     
 
-     # Şifre gereksinimlerini kontrol et
+# Check password requirements
     if not is_valid_password(password1):
         message = "Password must be at least 9 characters long and contain at least one digit, one letter, and one special character."
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
-    # E-posta adresinin önceden kaydedilip kaydedilmediğini kontrol et
+# Check if the e-mail address is already registered
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM customers WHERE email = %s", (email,))
     existing_email = cursor.fetchone()
@@ -207,7 +210,7 @@ def add_user():
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
-    # Kullanıcı adının önceden kaydedilip kaydedilmediğini kontrol et
+# Check if username is already registered
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM customers WHERE username = %s", (username,))
     existing_username = cursor.fetchone()
@@ -218,18 +221,18 @@ def add_user():
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
-    # MySQL cursor oluştur
+# Create MySQL cursor
     cur = mysql.connection.cursor()
 
-    # Veritabanına ekleme sorgusu
+# Query to insert into database
     cur.execute("INSERT INTO customers(customer_id, name, surname, email, password, username, mobile_phone) VALUES (NULL, %s, %s, %s, %s, %s, %s)",
                 (firstName, lastName, email, password1, username, phone))
 
-    # Değişiklikleri kaydet ve cursor'u kapat
+# Save changes and close cursor
     mysql.connection.commit()
     cur.close()
 
-    # Başarılı kayıt mesajı
+# Successful registration message
     message = "Registration successful! Please login."
     return redirect('/login?message=' + message)
 
@@ -240,7 +243,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        # E-posta adresine ait kullanıcıyı veritabanından getir
+# Fetch the user of the e-mail address from the database
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM customers WHERE email = %s", (email,))
         user = cursor.fetchone()
@@ -261,14 +264,14 @@ def login():
 
 @app.route('/myprofile.html')
 def myprofile():
-    # Kullanıcı oturumunu kontrol et
+# Check user session
     if 'user_id' in session:
         user_id = session['user_id']
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (user_id,))
         user = cursor.fetchone()
         cursor.close()
-        # Kullanıcının araç bilgilerini al
+    # Get user's vehicle information
         cursor = mysql.connection.cursor()
         cursor.execute("SELECT * FROM vehicles WHERE customer_id = %s", (user_id,))
         vehicles = cursor.fetchall()
@@ -278,29 +281,45 @@ def myprofile():
             mobile_phone = user[2]
             name = user[1]
             surname = user[5]
-            # Oturum açmış kullanıcılar için myprofile tuşunu göster
+    # Show myprofile key for logged in users
             show_myprofile_button = True
             return render_template('myprofile.html', email=email, mobile_phone=mobile_phone, name=name, surname=surname, show_myprofile_button=show_myprofile_button,vehicles=vehicles)
 
-    # Kullanıcı oturumu yoksa veya çıkış yapılmışsa, login sayfasına yönlendir
+# Redirect to login page if user is not logged in or logged out
     return redirect('/login.html')
 
 @app.route('/booking.html')
 def booking():
-    # Kullanıcı oturumunu kontrol et
+# Check user session
     if 'user_id' in session:
         user_id = session['user_id']
         cursor = mysql.connection.cursor()
-        # Kullanıcının araç bilgilerini al
+# Get user's vehicle information
         cursor.execute("SELECT * FROM vehicles WHERE customer_id = %s", (user_id,))
         vehicles = cursor.fetchall()
         cursor.close()
-        # Kullanıcı oturum açmışsa, booking sayfasını render et ve araç plakalarını da gönder
+# If the user is logged in, render the booking page and also send the license plates
         return render_template('booking.html', vehicles=vehicles)
     else:
-        # Kullanıcı oturum açmamışsa, login sayfasına yönlendir
+# Redirect to login page if user is not logged in
         return redirect('/login.html')
-  # Ekleme yapılan fonksiyonu güncelleyin
+# Update the added function
+
+
+#booking limit
+def get_total_workload_for_date(booking_date):
+    cursor = mysql.connection.cursor()
+    query = """
+    SELECT SUM(s.workload) 
+    FROM bookings b 
+    JOIN services s ON b.service_id = s.service_id 
+    WHERE b.booking_date = %s
+    """
+    cursor.execute(query, (booking_date,))
+    total_workload = cursor.fetchone()[0]
+    cursor.close()
+    return total_workload if total_workload else 0
+
 @app.route('/add_booking', methods=["POST"])
 def add_booking():
     if 'user_id' in session:
@@ -311,28 +330,31 @@ def add_booking():
         user_comments = request.form['user_comments']
     
         # Determine service_id based on booking_status
-
-         # Veritabanında service_type ile booking_type'ı karşılaştırarak service_id'yi alın
         cursor = mysql.connection.cursor()
-        cursor.execute("SELECT service_id FROM services WHERE service_type = %s", (booking_type,))
+        cursor.execute("SELECT service_id, workload FROM services WHERE service_type = %s", (booking_type,))
         result = cursor.fetchone()
-        if result:
-            service_id = result[0]
-        else:
-            # Eğer eşleşme yoksa, varsayılan olarak service_id'yi 4 olarak ayarlayın
-            service_id = 3
-        service_id=result
         cursor.close()
+        
+        if not result:
+            flash("Invalid service type.", "error")
+            return redirect('/booking.html')
 
+        service_id, workload = result
 
-        # licence_details ile eşleşen vehicle_id'yi almak için sorgu yapın
+        # Check if total workload will exceed the limit
+        current_workload = get_total_workload_for_date(booking_date)
+        if current_workload + workload > 20:
+            flash("Booking cannot be made as the workload for the day is exceeded.", "error")
+            return redirect('/booking.html')
+
+        # Query to get vehicle_id matching license_details
         vehicle_id = get_vehicle_id_by_licence_details(licence_details)
         
         if vehicle_id is None:
             flash("Vehicle with licence details {} not found.".format(licence_details), "error")
             return redirect('/booking.html')
         
-        # Veritabanına rezervasyon bilgilerini eklemek için işlevi çağır
+        # Call function to add reservation information to database
         add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details)
         flash("Booking added successfully.", "success")
         return redirect('/booking.html')
@@ -340,7 +362,7 @@ def add_booking():
         return redirect('/login.html')
 
 
-# Veritabanından licence_details ile eşleşen vehicle_id'yi getiren işlev
+# Function to retrieve vehicle_id matching license_details from database
 def get_vehicle_id_by_licence_details(licence_details):
     cur = mysql.connection.cursor()
     cur.execute("SELECT vehicle_id FROM vehicles WHERE licence_details = %s", (licence_details,))
@@ -352,7 +374,7 @@ def get_vehicle_id_by_licence_details(licence_details):
 
 
 
-# Veritabanına rezervasyon bilgilerini eklemek için işlev
+# Function to add reservation information to the database
 def add_booking_to_db(customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details):
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO bookings (customer_id, vehicle_id, service_id, booking_date, user_comments, licence_details) VALUES (%s, %s, %s, %s, %s, %s)",

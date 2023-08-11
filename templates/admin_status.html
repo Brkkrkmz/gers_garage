@@ -10,9 +10,9 @@
 
     <div class="row">
         <div class="col-12">
-            <!-- Your table will be inserted here -->
+      
             <div id="schedule">
-                <!-- AJAX response will be displayed here -->
+         
             </div>
         </div>
     </div>
@@ -29,11 +29,11 @@
     {% endwith %}
     </div>
 
-<!-- Booking ID Girişi -->
+<!-- Booking ID  -->
 <div id="bookingInput" style="display:none;">
     <form action="{{ url_for('update_status') }}" method="post"> <!-- Formu doğru yola gönderme işlemi -->
         <select id="anotherSelect" class="form-control" name="booking_id">
-            <!-- Options will be dynamically added here -->
+
         </select>
 
         <div class="form-group">
@@ -47,7 +47,7 @@
 
         <input type="submit" value="ASSIGN">
         
-    </form> <!-- Form etiketini düzgün bir şekilde kapatma -->
+    </form> 
 </div>
 
 
@@ -59,7 +59,8 @@
             const form = document.getElementById('dateForm');
             const date = form.elements['date'].value;
 
-            // AJAX ile Flask view_schedule endpointine istek gönderin
+            // AJAX to Flask view_schedule endpoint I'm sending request.
+
             fetch(`/admin_status`, {
                 method: 'POST',
                 headers: {
@@ -127,12 +128,12 @@
                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
-                    // Show Booking ID Girişin 
+                    // Show Booking ID  
                     document.getElementById('bookingInput').style.display = 'block';
                   
                 } else {
                     scheduleDiv.innerHTML = '<p>No bookings found for the selected date.</p>';
-                    // Hide Booking ID Girişi 
+                    // Hide Booking ID  
                     document.getElementById('bookingInput').style.display = 'none';
                   
                 }

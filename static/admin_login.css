@@ -12,16 +12,19 @@ form {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin-top: 50px; /* Formu başlık üstüne getirmek için boşluk ekliyoruz */
+    margin-top: 50px; /* Add a space to put the form above the header */
+
 }
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
     position: absolute;
-    top: 330px; /* Başlığı yukarı taşımak için üst boşluk belirliyoruz */
+    top: 330px; /* We set a header to move the title up */
+
     left: 50%;
-    transform: translateX(-50%); /* Başlığı yatayda ortalamak için kullanıyoruz */
+    transform: translateX(-50%); /* We use it to center the title horizontally */
+
 }
 
 label, input {
