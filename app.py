@@ -204,7 +204,6 @@ def add_user():
         return render_template('register.html', message=message, firstName=firstName, lastName=lastName, email=email,
                                username=username, phone=phone)
 
-# Check if username is already registered
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM customers WHERE username = %s", (username,))
     existing_username = cursor.fetchone()
@@ -301,7 +300,6 @@ def booking():
     else:
 # Redirect to login page if user is not logged in
         return redirect('/login.html')
-# Update the added function
 
 
 #booking limit

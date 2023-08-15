@@ -37,7 +37,7 @@ def admin_status2():
     status_data = cursor.fetchall()
     connection.close()
     return render_template('admin_status.html', status_data=status_data)
-
+ 
 
 #------------GET PRODUCTS------------------------------------------------------------------------
 
@@ -391,9 +391,9 @@ def update_status():
 
         flash("Status not found!", 'error')
 
-    # to stay on the same page
+    # to stay on the same page (back to first page)
 
-    return redirect(request.referrer)
+    return redirect(request.referrer) 
 
 
 
